@@ -35,7 +35,12 @@ const createUser = async (req, res) => {
 const getAllUser = async (req, res) => {
     try {
         const scholarshipAdmin = await ScholarshipAdmin.findAll({
-            attributes: ['user_id', 'name', 'email', 'organization']
+            attributes: [
+                'user_id',
+                'name',
+                'email',
+                'organization'
+            ]
         });
         return res.status(200).json({
             status: "success",
@@ -55,7 +60,12 @@ const getAllUser = async (req, res) => {
 const getUser = async (req, res) => {
     try {
         const scholarshipAdmin = await ScholarshipAdmin.findByPk(req.params.id, {
-            attributes: ['user_id', 'name', 'email', 'organization']
+            attributes: [
+                'user_id',
+                'name',
+                'email',
+                'organization'
+            ]
         });
         if (!scholarshipAdmin) { // if user not found
             throw new Error("User does not exist");
