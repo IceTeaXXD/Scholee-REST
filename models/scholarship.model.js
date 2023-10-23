@@ -21,9 +21,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         description: {
             type: DataTypes.TEXT('long'),
+            allowNull: false,
         },
         short_description: {
             type: DataTypes.STRING(255),
+            allowNull: false,
         },
         coverage: {
             type: DataTypes.INTEGER,
