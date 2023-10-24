@@ -1,8 +1,8 @@
 const router = require('express').Router()
 
 // Scholarship Controller
-const scholarshipController = require('../controllers/scholarshipController.js');
-const scholarshipadminController = require('../controllers/scholarshipadminController.js');
+const scholarshipController = require('../controllers/scholarship.controller.js');
+const scholarshipadminController = require('../controllers/scholarshipadmin.controller.js');
 
 // Scholarship Admin
 router.get('/scholarshipadmin', scholarshipadminController.getAllUser);
