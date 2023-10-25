@@ -2,6 +2,7 @@ const db =  require("../models");
 
 // Create main model
 const Scholarship = db.scholarship;
+const ScholarshipType = db.scholarshiptype;
 
 // Create Scholarship
 const createScholarship = async (req, res) => {
@@ -13,6 +14,10 @@ const createScholarship = async (req, res) => {
             coverage: req.body.coverage,
             contact_name: req.body.contact_name,
             contact_email: req.body.contact_email,
+        });
+        const scholarshiptype = await ScholarshipType.create({
+            scholarship_id: scholarship.id,
+            type: req.body.type,
         });
         return res.status(200).json({
             status: "success",
@@ -26,6 +31,7 @@ const createScholarship = async (req, res) => {
                 coverage: scholarship.coverage,
                 contact_name: scholarship.contact_name,
                 contact_email: scholarship.contact_email,
+                type: scholarshiptype.type,
             }
         });
     } catch (err) {
@@ -50,12 +56,20 @@ const getAllScholarships = async (req, res) => {
                 'contact_name', 
                 'contact_email',
                 'administrator_id'
-            ]
-        });
+            ],
+            include: {
+                model: ScholarshipType,
+                as: "scholarshiptype",
+                attributes: [
+                    'type'
+                ]
+            }
+        });    
         return res.status(200).json({
             status: "success",
-            message: "Successfully retrieved all scholarships",
-            data: scholarship
+            message: "Successfully retrieved all scholarships and types",
+            data: scholarship,
+            type: ScholarshipType.type
         });
     } catch (err) {
         return res.status(500).json({
@@ -65,10 +79,13 @@ const getAllScholarships = async (req, res) => {
         });
     }
 };
-
 const getScholarship = async (req, res) => {
     try {
-        const scholarship = await Scholarship.findByPk(req.params.id, {
+        const scholarshipId = req.params.id; // Assuming the parameter is named 'id'
+        const scholarship = await Scholarship.findOne({
+            where: {
+                id: scholarshipId,
+            },
             attributes: [
                 'id',
                 'title',
@@ -78,18 +95,27 @@ const getScholarship = async (req, res) => {
                 'contact_name',
                 'contact_email',
                 'administrator_id'
-            ]
+            ],
+            include: [
+                {
+                    model: ScholarshipType,
+                    as: 'scholarshiptype',
+                    attributes: ['type'],
+                },
+            ],
         });
-        if (!scholarship) { // if scholarship not found
+
+        if (!scholarship) {
             return res.status(404).json({
                 status: "error",
                 message: "Scholarship not found",
                 data: null
             });
         }
+
         return res.status(200).json({
             status: "success",
-            message: "Successfully retrieved scholarship",
+            message: "Successfully retrieved the scholarship",
             data: scholarship
         });
     } catch (err) {
@@ -108,10 +134,22 @@ const updateScholarship = async (req, res) => {
                 id: req.params.id 
             } 
         });
-        if (!scholarship) { // if scholarship not found
+        const scholarshiptype = await ScholarshipType.findOne({
+            where: {
+                scholarship_id: scholarship.id
+            }
+        });
+        if (!scholarship) { 
             return res.status(404).json({
                 status: "error",
                 message: "Scholarship not found",
+                data: null
+            });
+        }
+        if (!scholarshiptype) { 
+            return res.status(404).json({
+                status: "error",
+                message: "Scholarship type not found",
                 data: null
             });
         }
@@ -123,10 +161,14 @@ const updateScholarship = async (req, res) => {
             contact_name: req.body.contact_name,
             contact_email: req.body.contact_email,
         });
+        await scholarshiptype.update({
+            type: req.body.type
+        });
         return res.status(200).json({
             status: "success",
             message: "Successfully updated scholarship",
-            data: scholarship
+            data: scholarship,
+            type: scholarshiptype
         });
     } catch (err) {
         return res.status(500).json({
@@ -151,11 +193,18 @@ const deleteScholarship = async (req, res) => {
                 data: null
             });
         }
+        const scholarshiptype = await ScholarshipType.findOne({
+            where: {
+                scholarship_id: scholarship.id
+            }
+        });
         await scholarship.destroy();
+        await scholarshiptype.destroy();
         return res.status(200).json({
             status: "success",
             message: "Successfully deleted scholarship",
-            data: scholarship
+            data: scholarship,
+            type: scholarshiptype
         });
     } catch (err) {
         return res.status(500).json({
