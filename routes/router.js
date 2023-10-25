@@ -8,6 +8,17 @@ router.get('/company/:id', company.getCompanyByID);
 router.post('/company', company.createCompany);
 router.patch('/company/:id', company.updateCompany);
 router.delete('/company/:id', company.deleteCompany);
+router.post('/company', company.createCompany);
+router.get('/company', company.getAllCompany);
+
+// Scholarship Controller
+const scholarshipController = require('../controllers/scholarship.controller.js');
+
+router.get('/scholarship', scholarshipController.getAllScholarships);
+router.get('/scholarship/:id', scholarshipController.getScholarship);
+router.post('/scholarship', scholarshipController.createScholarship);
+router.patch('/scholarship/:id', scholarshipController.updateScholarship);
+router.delete('/scholarship/:id', scholarshipController.deleteScholarship);
 
 router.get("/", (req, res) => {
     const html = `

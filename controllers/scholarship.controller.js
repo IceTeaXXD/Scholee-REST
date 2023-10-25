@@ -7,8 +7,6 @@ const Scholarship = db.scholarship;
 const createScholarship = async (req, res) => {
     try {
         const scholarship = await Scholarship.create({
-            user_id: req.body.user_id,
-            scholarship_id: await Scholarship.count() + 1,
             title: req.body.title,
             description: req.body.description,
             short_description: req.body.short_description,
@@ -20,8 +18,8 @@ const createScholarship = async (req, res) => {
             status: "success",
             message: "Successfully created scholarship",
             data: {
-                user_id: scholarship.user_id,
-                scholarship_id: scholarship.scholarship_id,
+                user_id: scholarship.administrator_id,
+                scholarship_id: scholarship.id,
                 title: scholarship.title,
                 description: scholarship.description,
                 short_description: scholarship.short_description,
@@ -44,14 +42,14 @@ const getAllScholarships = async (req, res) => {
     try {
         const scholarship = await Scholarship.findAll({
             attributes: [
-                'user_id', 
-                'scholarship_id', 
+                'id', 
                 'title', 
                 'description', 
                 'short_description', 
                 'coverage', 
                 'contact_name', 
-                'contact_email'
+                'contact_email',
+                'administrator_id'
             ]
         });
         return res.status(200).json({
@@ -72,14 +70,14 @@ const getScholarship = async (req, res) => {
     try {
         const scholarship = await Scholarship.findByPk(req.params.id, {
             attributes: [
-                'user_id',
-                'scholarship_id',
+                'id',
                 'title',
                 'description',
                 'short_description',
                 'coverage',
                 'contact_name',
-                'contact_email'
+                'contact_email',
+                'administrator_id'
             ]
         });
         if (!scholarship) { // if scholarship not found
@@ -107,7 +105,7 @@ const updateScholarship = async (req, res) => {
     try {
         const scholarship = await Scholarship.findOne({ 
             where: { 
-                scholarship_id: req.params.id 
+                id: req.params.id 
             } 
         });
         if (!scholarship) { // if scholarship not found
@@ -143,7 +141,7 @@ const deleteScholarship = async (req, res) => {
     try {
         const scholarship = await Scholarship.findOne({ 
             where: { 
-                scholarship_id: req.params.id 
+                id: req.params.id 
             } 
         });
         if (!scholarship) { // if scholarship not found
