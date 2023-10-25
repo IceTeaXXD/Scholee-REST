@@ -43,5 +43,12 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
+    Scholarship.associations = (models) => {
+        Scholarship.belongsTo(models.company, {
+            foreignKey: "company_id",
+            as: "company",
+        });
+    }
+
     return Scholarship;
 };

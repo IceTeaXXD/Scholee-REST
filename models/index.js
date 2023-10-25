@@ -37,11 +37,13 @@ db.sequelize = sequelize;
 db.user = require('./user.model.js')(sequelize, DataTypes);
 db.company = require('./company.model.js')(sequelize, DataTypes);
 db.administrator = require('./administrator.model.js')(sequelize, DataTypes);
+db.scholarship = require('./scholarship.model.js')(sequelize, DataTypes);
 
 // Set up associations
 db.user.associations(db);
 db.company.associations(db);
 db.administrator.associations(db);
+db.scholarship.associations(db);
 
 // Sync database
 sequelize.sync({ force: false }).then(() => {
