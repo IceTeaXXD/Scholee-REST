@@ -1,25 +1,22 @@
 module.exports = (sequelize, DataTypes) => {
     const Company = sequelize.define(
-        "Company",
+        "company",
+        {},
         {
-            user_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                primaryKey: true,
-                references : {
-                    model : 'User',
-                    key : 'user_id'
-                }
-            },
-        },
-        {
-            tableName: "Company",
+            tableName: "company",
             timestamps: false,
         }
     );
 
-    Company.associate = function (models) {
-        Company.belongsTo(models.Organization, { foreignKey: "user_id" });
+    Company.associations = (models) => {
+        Company.belongsTo(models.user, {
+            foreignKey: "user_id",
+            as: "user",
+        });
+        Company.hasMany(models.administrator, {
+            foreignKey: "company_id",
+            as: "administrators",
+        });
     };
 
     return Company;

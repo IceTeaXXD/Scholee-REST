@@ -5,11 +5,7 @@ module.exports = (sequelize, DataTypes) => {
             user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                references : {
-                    model : 'Administrator',
-                    key : 'user_id',
-                    onDelete : 'CASCADE'
-                }
+
             },
             scholarship_id: {
                 type: DataTypes.INTEGER,

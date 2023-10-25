@@ -6,11 +6,6 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-                references: {
-                    model: "Scholarship",
-                    key: "scholarship_id",
-                    onDelete: "CASCADE",
-                },
             },
             type: {
                 type: DataTypes.STRING(50),

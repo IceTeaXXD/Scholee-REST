@@ -1,10 +1,14 @@
 const router = require('express').Router()
 
 // Scholarship Controller
-const administrator = require('../controllers/administrator.controller.js');
+// const administrator = require('../controllers/administrator.controller.js');
+const company = require('../controllers/company.controller.js');
+
+router.post('/company', company.createCompany);
+router.get('/company', company.getAllCompany);
 
 // Administrator
-router.post('/administrator', administrator.createAdministrator);
+// router.post('/administrator', administrator.createAdministrator);
 
 // // Scholarship
 // router.get('/scholarship', scholarshipController.getAllScholarships);
