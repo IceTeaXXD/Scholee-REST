@@ -6,6 +6,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
+                references : {
+                    model : 'User',
+                    key : 'user_id'
+                }
             },
             type: {
                 type: DataTypes.STRING(50),
@@ -17,10 +21,6 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false,
         }
     );
-
-    Organization.associate = function (models) {
-        Organization.belongsTo(models.User, { foreignKey: "user_id" });
-    };
     
     return Organization;
 };

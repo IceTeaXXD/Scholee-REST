@@ -7,10 +7,20 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 primaryKey: true,
                 autoIncrement: true,
+                references : {
+                    model : 'User',
+                    key : 'user_id',
+                    ondDelete : 'CASCADE'
+                }
             },
             company_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                references : {
+                    model : 'Company',
+                    key : 'user_id',
+                    onDelete : 'CASCADE'
+                }
             },
         },
         {
@@ -18,17 +28,6 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false,
         }
     );
-
-    Administrator.associate = function (models) {
-        Administrator.belongsTo(models.User, {
-            foreignKey: "user_id",
-            onDelete: "CASCADE",
-        });
-        Administrator.belongsTo(models.Company, { 
-            foreignKey: "company_id",
-            onDelete: "CASCADE",
-        });
-    };
 
     return Administrator;
 };

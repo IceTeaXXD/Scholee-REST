@@ -35,17 +35,32 @@ db.sequelize = sequelize;
 
 // Import models
 db.user = require('./user.model.js')(sequelize, DataTypes);
-db.verification = require('./verification.model.js')(sequelize, DataTypes);
-db.administrator = require('./administrator.model.js')(sequelize, DataTypes);
 db.organization = require('./organization.model.js')(sequelize, DataTypes);
 db.company = require('./company.model.js')(sequelize, DataTypes);
 db.university = require('./university.model.js')(sequelize, DataTypes);
+db.administrator = require('./administrator.model.js')(sequelize, DataTypes);
+db.verification = require('./verification.model.js')(sequelize, DataTypes);
 db.scholarship = require('./scholarship.model.js')(sequelize, DataTypes);
 db.scholarshiptype = require('./scholarshiptype.model.js')(sequelize, DataTypes);
 
 // Sync database
-db.sequelize.sync( {force: false} ).then(() => {
-    console.log("Drop and re-sync db.");
-})
+db.user.sync().then(() => {
+    return db.organization.sync();
+}).then(() => {
+    return db.company.sync();
+}).then(() => {
+    return db.university.sync();
+}).then(() => {
+    return db.administrator.sync();
+}).then(() => {
+    return db.verification.sync();
+}).then(() => {
+    return db.scholarship.sync();
+}).then(() => {
+    return db.scholarshiptype.sync();
+}).then(() => {
+    console.log("All models were synchronized successfully.");
+});
+
 
 module.exports = db;

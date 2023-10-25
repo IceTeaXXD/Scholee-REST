@@ -6,11 +6,21 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
+                references: {
+                    model: 'Administrator',
+                    key: 'user_id',
+                    onDelete: 'CASCADE',
+                },
             },
             scholarship_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
+                references: {
+                    model: 'Scholarship',
+                    key: 'scholarship_id',
+                    onDelete: 'CASCADE',
+                },
             },
             type: {
                 type: DataTypes.STRING(50),
@@ -22,13 +32,6 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false,
         }
     );
-
-    ScholarshipType.associate = function (models) {
-        ScholarshipType.belongsTo(models.Scholarship, {
-            foreignKey: { name: "user_id", allowNull: false },
-            onDelete: "CASCADE",
-        });
-    };
 
     return ScholarshipType;
 };
