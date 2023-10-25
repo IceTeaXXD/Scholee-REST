@@ -1,22 +1,17 @@
 const router = require('express').Router()
 
 // Scholarship Controller
-const scholarshipController = require('../controllers/scholarship.controller.js');
-const scholarshipadminController = require('../controllers/scholarshipadmin.controller.js');
+const administrator = require('../controllers/administrator.controller.js');
 
-// Scholarship Admin
-router.get('/scholarshipadmin', scholarshipadminController.getAllUser);
-router.get('/scholarshipadmin/:id', scholarshipadminController.getUser);
-router.post('/scholarshipadmin', scholarshipadminController.createUser);
-router.patch('/scholarshipadmin/:id', scholarshipadminController.updateUser);
-router.delete('/scholarshipadmin/:id', scholarshipadminController.deleteUser);
+// Administrator
+router.post('/administrator', administrator.createAdministrator);
 
-// Scholarship
-router.get('/scholarship', scholarshipController.getAllScholarships);
-router.get('/scholarship/:id', scholarshipController.getScholarship);
-router.post('/scholarship', scholarshipController.createScholarship);
-router.patch('/scholarship/:id', scholarshipController.updateScholarship);
-router.delete('/scholarship/:id', scholarshipController.deleteScholarship);
+// // Scholarship
+// router.get('/scholarship', scholarshipController.getAllScholarships);
+// router.get('/scholarship/:id', scholarshipController.getScholarship);
+// router.post('/scholarship', scholarshipController.createScholarship);
+// router.patch('/scholarship/:id', scholarshipController.updateScholarship);
+// router.delete('/scholarship/:id', scholarshipController.deleteScholarship);
 
 router.get("/example", (req, res) => {
     res.json({ message: "Example endpoint." });
