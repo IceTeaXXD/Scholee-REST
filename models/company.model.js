@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         Company.hasMany(models.administrator, {
             foreignKey: "company_id",
             as: "administrators",
+            onDelete: "CASCADE",
         });
     };
 
