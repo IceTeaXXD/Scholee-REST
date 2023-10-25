@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     const ScholarshipType = sequelize.define(
-        "ScholarshipType",
+        "scholarshiptype",
         {
             scholarship_id: {
                 type: DataTypes.INTEGER,
@@ -13,10 +13,15 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         {
-            tableName: "ScholarshipType",
+            tableName: "scholarshiptype",
             timestamps: false,
         }
     );
-
+    ScholarshipType.associations = (models) => {
+        ScholarshipType.belongsTo(models.scholarship, {
+            foreignKey: "scholarship_id",
+            as: "scholarship",
+        });
+    }
     return ScholarshipType;
 };

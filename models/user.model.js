@@ -29,7 +29,15 @@ module.exports = (sequelize, DataTypes) => {
     User.associations = (models) => {
         User.hasOne(models.company, {
             foreignKey: "user_id",
-            as: "user",
+            as: "company",
+        });
+        User.hasOne(models.verification, {
+            foreignKey: "user_id",
+            as: "verfication",
+        });
+        User.hasOne(models.university, {
+            foreignKey: "user_id",
+            as: "university",
         });
     };
 

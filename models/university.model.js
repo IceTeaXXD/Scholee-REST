@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     const University = sequelize.define(
-        "University",
+        "university",
         {
             user_id: {
                 type: DataTypes.INTEGER,
@@ -9,10 +9,15 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         {
-            tableName: "University",
+            tableName: "university",
             timestamps: false,
         }
     );
-
+    University.associations = (models) => {
+        University.belongsTo(models.user, {
+            foreignKey: "user_id",
+            as: "user",
+        });
+    }
     return University;
 };

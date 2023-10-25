@@ -1,13 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-    const Verification = sequelize.define(
-        "Verification",
-        {
-            user_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                primaryKey: true,
-                autoIncrement: true,
-            },
+    const Verification = sequelize.define("verification",
+{
             reset_token: {
                 type: DataTypes.STRING(64),
                 allowNull: true,
@@ -25,10 +18,16 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         {
-            tableName: "Verification",
+            tableName: "verification",
             timestamps: false,
         }
     );
-    
+    Verification.associations = (models) => {
+        Verification.belongsTo(models.user, {
+            foreignKey: "user_id",
+            as : "user",
+            onDelete : "CASCADE",
+        });
+    };
     return Verification;
 };

@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     const Scholarship = sequelize.define(
-        "Scholarship",
+        "scholarship",
         {
             user_id: {
                 type: DataTypes.INTEGER,
@@ -38,15 +38,19 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         {
-            tableName: "Scholarship",
+            tableName: "scholarship",
             timestamps: false,
         }
     );
 
     Scholarship.associations = (models) => {
-        Scholarship.belongsTo(models.company, {
-            foreignKey: "company_id",
-            as: "company",
+        Scholarship.belongsTo(models.administrator, {
+            foreignKey: "id",
+            as: "administrator",
+        });
+        Scholarship.hasMany(models.scholarshiptype, {
+            foreignKey: "scholarship_id",
+            as: "scholarshiptype",
         });
     }
 

@@ -38,13 +38,17 @@ db.user = require('./user.model.js')(sequelize, DataTypes);
 db.company = require('./company.model.js')(sequelize, DataTypes);
 db.administrator = require('./administrator.model.js')(sequelize, DataTypes);
 db.scholarship = require('./scholarship.model.js')(sequelize, DataTypes);
-
+db.verification = require('./verification.model.js')(sequelize, DataTypes);
+db.scholarshiptype = require('./scholarshiptype.model.js')(sequelize, DataTypes);
+db.university = require('./university.model.js')(sequelize, DataTypes);
 // Set up associations
 db.user.associations(db);
 db.company.associations(db);
 db.administrator.associations(db);
 db.scholarship.associations(db);
-
+db.verification.associations(db);
+db.scholarshiptype.associations(db);
+db.university.associations(db);
 // Sync database
 sequelize.sync({ force: false }).then(() => {
     console.log('Drop and Resync DB');
