@@ -34,7 +34,12 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Import models
-db.scholarshipadmin = require('./scholarshipadmin.model.js')(sequelize, DataTypes);
+db.user = require('./user.model.js')(sequelize, DataTypes);
+db.verification = require('./verification.model.js')(sequelize, DataTypes);
+db.administrator = require('./administrator.model.js')(sequelize, DataTypes);
+db.organization = require('./organization.model.js')(sequelize, DataTypes);
+db.company = require('./company.model.js')(sequelize, DataTypes);
+db.university = require('./university.model.js')(sequelize, DataTypes);
 db.scholarship = require('./scholarship.model.js')(sequelize, DataTypes);
 db.scholarshiptype = require('./scholarshiptype.model.js')(sequelize, DataTypes);
 
