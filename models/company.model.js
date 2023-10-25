@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         Company.belongsTo(models.user, {
             foreignKey: "user_id",
             as: "user",
+            onDelete: "CASCADE",
         });
         Company.hasMany(models.administrator, {
             foreignKey: "company_id",

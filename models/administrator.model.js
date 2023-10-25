@@ -12,10 +12,12 @@ module.exports = (sequelize, DataTypes) => {
         Administrator.belongsTo(models.user, {
             foreignKey: "user_id",
             as: "user",
+            onDelete: "CASCADE",
         });
         Administrator.belongsTo(models.company, {
             foreignKey: "company_id",
             as: "company",
+            onDelete: "CASCADE",
         });
     };
 

@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         ScholarshipType.belongsTo(models.scholarship, {
             foreignKey: "scholarship_id",
             as: "scholarship",
+            onDelete: "CASCADE",
         });
     }
     return ScholarshipType;

@@ -2,16 +2,6 @@ module.exports = (sequelize, DataTypes) => {
     const Scholarship = sequelize.define(
         "scholarship",
         {
-            user_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-
-            },
-            scholarship_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                primaryKey: true,
-            },
             title: {
                 type: DataTypes.STRING(50),
                 allowNull: false,
@@ -45,8 +35,9 @@ module.exports = (sequelize, DataTypes) => {
 
     Scholarship.associations = (models) => {
         Scholarship.belongsTo(models.administrator, {
-            foreignKey: "id",
+            foreignKey: "administrator_id",
             as: "administrator",
+            onDelete: "CASCADE",
         });
         Scholarship.hasMany(models.scholarshiptype, {
             foreignKey: "scholarship_id",
