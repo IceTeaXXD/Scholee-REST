@@ -1,6 +1,6 @@
 // Import Modules
 const dbConfig = require("../config/db.config.js");
-const {Sequelize, DataTypes} = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 
 // Establish Sequelize Connection
 const sequelize = new Sequelize(
@@ -34,13 +34,24 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Import models
-db.scholarshipadmin = require('./scholarshipadmin.model.js')(sequelize, DataTypes);
+db.user = require('./user.model.js')(sequelize, DataTypes);
+db.company = require('./company.model.js')(sequelize, DataTypes);
+db.administrator = require('./administrator.model.js')(sequelize, DataTypes);
 db.scholarship = require('./scholarship.model.js')(sequelize, DataTypes);
+db.verification = require('./verification.model.js')(sequelize, DataTypes);
 db.scholarshiptype = require('./scholarshiptype.model.js')(sequelize, DataTypes);
-
+db.university = require('./university.model.js')(sequelize, DataTypes);
+// Set up associations
+db.user.associations(db);
+db.company.associations(db);
+db.administrator.associations(db);
+db.scholarship.associations(db);
+db.verification.associations(db);
+db.scholarshiptype.associations(db);
+db.university.associations(db);
 // Sync database
-db.sequelize.sync( {force: false} ).then(() => {
-    console.log("Drop and re-sync db.");
-})
+sequelize.sync({ force: false }).then(() => {
+    console.log('Drop and Resync DB');
+});
 
 module.exports = db;
