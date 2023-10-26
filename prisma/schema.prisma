@@ -26,8 +26,9 @@ model Verification {
   verification_id Int @id @default(autoincrement())
   user User? @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id Int @unique
-  token String
-  expires_at DateTime
+  is_verified Boolean @default(false)
+  verification_token String @unique
+  reset_password_token String @unique
 }
 
 model University {
