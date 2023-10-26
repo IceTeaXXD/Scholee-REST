@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id Int @id @default(autoincrement()) @unique
+  name String
+  email String @unique
+  password String
+  address String
+  role Role
+  university University?
+  organization Organization?
+  verification Verification?
+}
+
+model Verification {
+  verification_id Int @id @default(autoincrement())
+  user User? @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id Int @unique
+  token String
+  expires_at DateTime
+}
+
+model University {
+  university_id Int @id @default(autoincrement())
+  description String
+  user User? @relation(fields: [university_id], references: [user_id], onDelete: Cascade)
+}
+
+model Organization {
+  organization_id Int @id @default(autoincrement())
+  description String
+  user User? @relation(fields: [organization_id], references: [user_id], onDelete: Cascade)
+  scholarship Scholarship[]
+}
+
+model Scholarship {
+  scholarship_id Int @id @default(autoincrement())
+  title String
+  description String
+  short_description String
+  coverage Int
+  contact_name String
+  contact_email String
+  organization_id Int
+  organization Organization @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade)
+  scholarshiptype ScholarshipType[]
+}
+
+model ScholarshipType {
+  scholarshiptype_id Int @id @default(autoincrement())
+  type String
+  scholarship_id Int
+  scholarship Scholarship @relation(fields: [scholarship_id], references: [scholarship_id], onDelete: Cascade)
+}
+
+enum Role {
+  university
+  organization
+}
