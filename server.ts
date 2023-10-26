@@ -5,7 +5,7 @@ import express, { Request, Response, Express } from "express";
 import cors from "cors";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
 const defaultroute = require("./routes/default.routes");
 const OrganizationRoute = require("./routes/organization.routes");
