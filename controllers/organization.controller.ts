@@ -1,5 +1,6 @@
 import {PrismaClient, Role} from '@prisma/client';
 import { Request, Response } from "express";
+import crypro from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -29,6 +30,11 @@ export const createOrganization = async (req: Request, res: Response) => {
                     create: {
                         description: organizationDescription
                     }
+                },
+                verification : {
+                    create: {
+                        verification_token: crypro.randomBytes(8).toString('hex')
+                    }
                 }
             }
         });
@@ -37,7 +43,10 @@ export const createOrganization = async (req: Request, res: Response) => {
             status:"success",
             message:"Organization created successfully",
             data: {
-                user: newUser
+                organization_id: newUser.user_id,
+                organization_name: newUser.name,
+                organization_email: newUser.email,
+                organization_address: newUser.address,
             }
         })
     } catch (error: any) {
@@ -68,10 +77,10 @@ export const getOrganizations = async (req: Request, res: Response) => {
             message: "Organizations retrieved successfully",
             data: organizations.map((organization) => {
                 return {
-                    id: organization.organization_id,
-                    name: organization.user?.name ?? null,
-                    email: organization.user?.email ?? null,
-                    address: organization.user?.address ?? null,
+                    organization_id: organization.organization_id,
+                    organization_name: organization.user?.name ?? null,
+                    organization_email: organization.user?.email ?? null,
+                    organization_address: organization.user?.address ?? null,
                 };
             }),
         });
@@ -113,7 +122,7 @@ export const getOrganization = async (req: Request, res: Response) => {
                 organization_id: organization.organization_id,
                 organization_name: organization.user?.name ?? null,
                 organization_email: organization.user?.email ?? null,
-                address: organization.user?.address ?? null,
+                organization_address: organization.user?.address ?? null,
             },
         });
     } catch (error: any) {
@@ -173,6 +182,10 @@ export const updateOrganization = async (req: Request, res: Response) => {
             }
         });
 
+        if (!updatedOrganization) {
+            throw new Error("Organization not found");
+        }
+
         res.status(200).json({
             status: "success",
             message: "Organization updated successfully",
@@ -180,7 +193,7 @@ export const updateOrganization = async (req: Request, res: Response) => {
                 organization_id: updatedOrganization.organization_id,
                 organization_name: updatedOrganization.user?.name ?? null,
                 organization_email: updatedOrganization.user?.email ?? null,
-                address: updatedOrganization.user?.address ?? null,
+                organization_address: updatedOrganization.user?.address ?? null,
             },
         });
 
@@ -215,9 +228,10 @@ export const deleteOrganization = async (req: Request, res: Response) => {
             throw new Error("Organization not found");
         }
 
-        await prisma.organization.delete({
+        // delete the user
+        await prisma.user.delete({
             where: {
-                organization_id: Number(id)
+                user_id: Number(id)
             }
         });
 
@@ -228,7 +242,7 @@ export const deleteOrganization = async (req: Request, res: Response) => {
                 organization_id: organization.organization_id,
                 organization_name: organization.user?.name ?? null,
                 organization_email: organization.user?.email ?? null,
-                address: organization.user?.address ?? null,
+                organization_address: organization.user?.address ?? null,
             },
         });
     } catch (error: any) {

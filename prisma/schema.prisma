@@ -27,8 +27,8 @@ model Verification {
   user User? @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id Int @unique
   is_verified Boolean @default(false)
-  verification_token String @unique
-  reset_password_token String @unique
+  verification_token String @default("")
+  reset_password_token String @default("")
 }
 
 model University {
