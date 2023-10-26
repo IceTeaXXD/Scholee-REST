@@ -8,8 +8,14 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
             },
             type: {
-                type: DataTypes.STRING(50),
+                type: DataTypes.TEXT,
                 allowNull: false,
+                get() {
+                    return JSON.parse(this.getDataValue('type'));
+                },
+                set(value) {
+                    this.setDataValue('type', JSON.stringify(value));
+                },
             },
         },
         {

@@ -1,25 +1,24 @@
 const router = require('express').Router()
 
-// Scholarship Controller
-// const administrator = require('../controllers/administrator.controller.js');
+// Company Controller
 const company = require('../controllers/company.controller.js');
 
+router.get('/company', company.getAllCompany);
+router.get('/company/:id', company.getCompanyByID);
+router.post('/company', company.createCompany);
+router.patch('/company/:id', company.updateCompany);
+router.delete('/company/:id', company.deleteCompany);
 router.post('/company', company.createCompany);
 router.get('/company', company.getAllCompany);
 
-// Administrator
-// router.post('/administrator', administrator.createAdministrator);
+// Scholarship Controller
+const scholarshipController = require('../controllers/scholarship.controller.js');
 
-// // Scholarship
-// router.get('/scholarship', scholarshipController.getAllScholarships);
-// router.get('/scholarship/:id', scholarshipController.getScholarship);
-// router.post('/scholarship', scholarshipController.createScholarship);
-// router.patch('/scholarship/:id', scholarshipController.updateScholarship);
-// router.delete('/scholarship/:id', scholarshipController.deleteScholarship);
-
-router.get("/example", (req, res) => {
-    res.json({ message: "Example endpoint." });
-});
+router.get('/scholarship', scholarshipController.getAllScholarships);
+router.get('/scholarship/:id', scholarshipController.getScholarship);
+router.post('/scholarship', scholarshipController.createScholarship);
+router.patch('/scholarship/:id', scholarshipController.updateScholarship);
+router.delete('/scholarship/:id', scholarshipController.deleteScholarship);
 
 router.get("/", (req, res) => {
     const html = `

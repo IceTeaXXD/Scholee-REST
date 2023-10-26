@@ -42,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         Scholarship.hasMany(models.scholarshiptype, {
             foreignKey: "scholarship_id",
             as: "scholarshiptype",
+            onDelete: "CASCADE",
         });
     }
 

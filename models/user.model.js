@@ -30,14 +30,17 @@ module.exports = (sequelize, DataTypes) => {
         User.hasOne(models.company, {
             foreignKey: "user_id",
             as: "company",
+            onDelete: "CASCADE",
         });
         User.hasOne(models.verification, {
             foreignKey: "user_id",
-            as: "verfication",
+            as: "verification",
+            onDelete: "CASCADE",
         });
         User.hasOne(models.university, {
             foreignKey: "user_id",
             as: "university",
+            onDelete: "CASCADE",
         });
     };
 
