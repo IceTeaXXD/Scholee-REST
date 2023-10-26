@@ -1,20 +1,18 @@
-# Use an official Node runtime as the base image
-FROM node:18
+# Use the official Node.js image as the base image
+FROM node:latest
 
-# Set the working directory in the container to /app
-WORKDIR /rest
+# Set the working directory in the container
+WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
+COPY ./prisma/schema.prisma ./prisma/
+COPY .env ./
 
-# Install any needed packages specified in package.json
-RUN npm install
+RUN yarn install
+RUN npx prisma generate
 
-# Migrate the database
-# RUN npx prisma migrate deploy
-
-# Bundle app source
 COPY . .
 
-# Run the app when the container launches
-CMD ["npm", "start"]
+EXPOSE 5000
+
+CMD ["yarn", "start"]
