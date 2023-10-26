@@ -1,5 +1,5 @@
-import express, { Request, Response, Express } from 'express';
-const router = express.Router()
+import express, { Request, Response, Express } from "express";
+const router = express.Router();
 
 router.get("/", (req: Request, res: Response) => {
     const html = `
@@ -52,7 +52,7 @@ router.get("/", (req: Request, res: Response) => {
     </body>
     </html>
     `;
-    res.type('html').send(html);
+    res.type("html").send(html);
 });
 
 module.exports = router;

@@ -1,11 +1,20 @@
-import {PrismaClient, Role} from '@prisma/client';
+import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
 export const createScholarship = async (req: Request, res: Response) => {
     try {
-        const { title, description, short_description, coverage, contact_name, contact_email, organization_id, type } = req.body;
+        const {
+            title,
+            description,
+            short_description,
+            coverage,
+            contact_name,
+            contact_email,
+            organization_id,
+            type,
+        } = req.body;
 
         const scholarship = await prisma.scholarship.create({
             data: {
@@ -20,7 +29,7 @@ export const createScholarship = async (req: Request, res: Response) => {
                         organization_id,
                     },
                 },
-                scholarshiptype: {  
+                scholarshiptype: {
                     create: type.map((element: string) => ({
                         type: element,
                     })),
@@ -32,9 +41,9 @@ export const createScholarship = async (req: Request, res: Response) => {
         });
 
         res.status(201).json(scholarship);
-    } catch (error : any) {
-        res.status(500).json({ 
-            message: error.message, 
+    } catch (error: any) {
+        res.status(500).json({
+            message: error.message,
         });
     }
 };
@@ -49,12 +58,12 @@ export const getScholarships = async (req: Request, res: Response) => {
         });
 
         res.status(200).json(scholarships);
-    } catch (error : any) {
-        res.status(500).json({ 
-            message: error.message, 
+    } catch (error: any) {
+        res.status(500).json({
+            message: error.message,
         });
     }
-}
+};
 
 export const getScholarship = async (req: Request, res: Response) => {
     try {
@@ -68,17 +77,25 @@ export const getScholarship = async (req: Request, res: Response) => {
             },
         });
         res.status(200).json(scholarship);
-    }
-    catch (error : any) {
-        res.status(500).json({ 
-            message: error.message, 
+    } catch (error: any) {
+        res.status(500).json({
+            message: error.message,
         });
     }
-}
+};
 
 export const updateScholarship = async (req: Request, res: Response) => {
     try {
-        const {title, description, short_description, coverage, contact_name, contact_email, organization_id, type } = req.body;
+        const {
+            title,
+            description,
+            short_description,
+            coverage,
+            contact_name,
+            contact_email,
+            organization_id,
+            type,
+        } = req.body;
         const { id } = req.params;
         const existingScholarship = await prisma.scholarship.findUnique({
             where: {
@@ -153,4 +170,4 @@ export const deleteScholarship = async (req: Request, res: Response) => {
             message: error.message,
         });
     }
-}
+};

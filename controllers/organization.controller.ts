@@ -1,4 +1,4 @@
-import {PrismaClient, Role} from '@prisma/client';
+import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
 import crypro from "crypto";
 
@@ -6,13 +6,14 @@ const prisma = new PrismaClient();
 
 export const createOrganization = async (req: Request, res: Response) => {
     try {
-        const { name, email, password, address, organizationDescription } = req.body;
-        
+        const { name, email, password, address, organizationDescription } =
+            req.body;
+
         // If email exists, throw error
         const user = await prisma.user.findUnique({
             where: {
-                email
-            }
+                email,
+            },
         });
 
         if (user) {
@@ -28,34 +29,36 @@ export const createOrganization = async (req: Request, res: Response) => {
                 role: Role.organization,
                 organization: {
                     create: {
-                        description: organizationDescription
-                    }
+                        description: organizationDescription,
+                    },
                 },
-                verification : {
+                verification: {
                     create: {
-                        verification_token: crypro.randomBytes(8).toString('hex')
-                    }
-                }
-            }
+                        verification_token: crypro
+                            .randomBytes(8)
+                            .toString("hex"),
+                    },
+                },
+            },
         });
-    
+
         res.status(200).json({
-            status:"success",
-            message:"Organization created successfully",
+            status: "success",
+            message: "Organization created successfully",
             data: {
                 organization_id: newUser.user_id,
                 organization_name: newUser.name,
                 organization_email: newUser.email,
                 organization_address: newUser.address,
-            }
-        })
+            },
+        });
     } catch (error: any) {
         res.status(400).json({
-            status:"error",
-            message: error.message
-        })
+            status: "error",
+            message: error.message,
+        });
     }
-}
+};
 
 export const getOrganizations = async (req: Request, res: Response) => {
     try {
@@ -66,12 +69,12 @@ export const getOrganizations = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true
-                    }
-                }
-            }
+                        address: true,
+                    },
+                },
+            },
         });
-    
+
         res.status(200).json({
             status: "success",
             message: "Organizations retrieved successfully",
@@ -86,18 +89,18 @@ export const getOrganizations = async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         res.status(400).json({
-            status:"error",
-            message: error.message
-        })
+            status: "error",
+            message: error.message,
+        });
     }
-}
+};
 
 export const getOrganization = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const organization = await prisma.organization.findUnique({
             where: {
-                organization_id: Number(id)
+                organization_id: Number(id),
             },
             select: {
                 organization_id: true,
@@ -105,12 +108,12 @@ export const getOrganization = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true
-                    }
-                }
-            }
+                        address: true,
+                    },
+                },
+            },
         });
-    
+
         if (!organization) {
             throw new Error("Organization not found");
         }
@@ -127,11 +130,11 @@ export const getOrganization = async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         res.status(400).json({
-            status:"error",
-            message: error.message
-        })
+            status: "error",
+            message: error.message,
+        });
     }
-}
+};
 
 export const updateOrganization = async (req: Request, res: Response) => {
     try {
@@ -139,7 +142,7 @@ export const updateOrganization = async (req: Request, res: Response) => {
         const { id } = req.params;
         const organization = await prisma.organization.findUnique({
             where: {
-                organization_id: Number(id)
+                organization_id: Number(id),
             },
             select: {
                 organization_id: true,
@@ -147,10 +150,10 @@ export const updateOrganization = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true
-                    }
-                }
-            }
+                        address: true,
+                    },
+                },
+            },
         });
 
         if (!organization) {
@@ -159,16 +162,16 @@ export const updateOrganization = async (req: Request, res: Response) => {
 
         const updatedOrganization = await prisma.organization.update({
             where: {
-                organization_id: Number(id)
+                organization_id: Number(id),
             },
             data: {
                 user: {
                     update: {
                         name,
                         email,
-                        address
-                    }
-                }
+                        address,
+                    },
+                },
             },
             select: {
                 organization_id: true,
@@ -176,10 +179,10 @@ export const updateOrganization = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true
-                    }
-                }
-            }
+                        address: true,
+                    },
+                },
+            },
         });
 
         if (!updatedOrganization) {
@@ -196,21 +199,20 @@ export const updateOrganization = async (req: Request, res: Response) => {
                 organization_address: updatedOrganization.user?.address ?? null,
             },
         });
-
     } catch (error: any) {
         res.status(400).json({
-            status:"error",
-            message: error.message
-        })
+            status: "error",
+            message: error.message,
+        });
     }
-}
+};
 
 export const deleteOrganization = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const organization = await prisma.organization.findUnique({
             where: {
-                organization_id: Number(id)
+                organization_id: Number(id),
             },
             select: {
                 organization_id: true,
@@ -218,12 +220,12 @@ export const deleteOrganization = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true
-                    }
-                }
-            }
+                        address: true,
+                    },
+                },
+            },
         });
-    
+
         if (!organization) {
             throw new Error("Organization not found");
         }
@@ -231,8 +233,8 @@ export const deleteOrganization = async (req: Request, res: Response) => {
         // delete the user
         await prisma.user.delete({
             where: {
-                user_id: Number(id)
-            }
+                user_id: Number(id),
+            },
         });
 
         res.status(200).json({
@@ -247,8 +249,8 @@ export const deleteOrganization = async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         res.status(400).json({
-            status:"error",
-            message: error.message
-        })
+            status: "error",
+            message: error.message,
+        });
     }
-}
+};
