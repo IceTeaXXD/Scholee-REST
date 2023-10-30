@@ -1,9 +1,9 @@
 import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
 import crypro from "crypto";
+import {hash} from "bcrypt";
 
 const prisma = new PrismaClient();
-
 export const createOrganization = async (req: Request, res: Response) => {
     try {
         const { 
@@ -25,11 +25,15 @@ export const createOrganization = async (req: Request, res: Response) => {
             throw new Error("Email already exists");
         }
 
+        // Hash the password
+        const saltRounds = 10; // You can adjust this number based on your security requirements
+        const hashedPassword = await hash(password, saltRounds);
+
         const newUser = await prisma.user.create({
             data: {
                 name,
                 email,
-                password,
+                password: hashedPassword, // Store the hashed password in the database
                 address,
                 role: Role.organization,
                 organization: {
@@ -65,6 +69,7 @@ export const createOrganization = async (req: Request, res: Response) => {
         });
     }
 };
+
 
 export const getOrganizations = async (req: Request, res: Response) => {
     try {

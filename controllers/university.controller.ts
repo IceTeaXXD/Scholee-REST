@@ -1,6 +1,7 @@
 import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
 import crypro from "crypto";
+import {hash} from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -20,11 +21,15 @@ export const createUniversity = async (req: Request, res: Response) => {
             throw new Error("Email already exists");
         }
 
+        // Hash the password
+        const saltRounds = 10;
+        const hashedPassword = await hash(password, saltRounds);
+
         const newUser = await prisma.user.create({
             data: {
                 name,
                 email,
-                password,
+                password : hashedPassword,
                 address,
                 role: Role.university,
                 university: {
