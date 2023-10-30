@@ -6,8 +6,13 @@ const prisma = new PrismaClient();
 
 export const createOrganization = async (req: Request, res: Response) => {
     try {
-        const { name, email, password, address, organizationDescription } =
-            req.body;
+        const { 
+            name, 
+            email, 
+            password, 
+            address, 
+            organizationDescription 
+        } = req.body;
 
         // If email exists, throw error
         const user = await prisma.user.findUnique({
@@ -50,6 +55,7 @@ export const createOrganization = async (req: Request, res: Response) => {
                 organization_name: newUser.name,
                 organization_email: newUser.email,
                 organization_address: newUser.address,
+                organization_description: organizationDescription,
             },
         });
     } catch (error: any) {
@@ -72,8 +78,13 @@ export const getOrganizations = async (req: Request, res: Response) => {
                         address: true,
                     },
                 },
+                description: true,
             },
         });
+
+        if (!organizations) {
+            throw new Error("Organizations not found");
+        }
 
         res.status(200).json({
             status: "success",
@@ -84,6 +95,7 @@ export const getOrganizations = async (req: Request, res: Response) => {
                     organization_name: organization.user?.name ?? null,
                     organization_email: organization.user?.email ?? null,
                     organization_address: organization.user?.address ?? null,
+                    organization_description: organization.description,
                 };
             }),
         });
@@ -111,6 +123,7 @@ export const getOrganization = async (req: Request, res: Response) => {
                         address: true,
                     },
                 },
+                description: true,
             },
         });
 
@@ -126,6 +139,7 @@ export const getOrganization = async (req: Request, res: Response) => {
                 organization_name: organization.user?.name ?? null,
                 organization_email: organization.user?.email ?? null,
                 organization_address: organization.user?.address ?? null,
+                organization_description: organization.description,
             },
         });
     } catch (error: any) {
@@ -138,7 +152,12 @@ export const getOrganization = async (req: Request, res: Response) => {
 
 export const updateOrganization = async (req: Request, res: Response) => {
     try {
-        const { name, email, address } = req.body;
+        const { 
+            name, 
+            email, 
+            address,
+            description 
+        } = req.body;
         const { id } = req.params;
         const organization = await prisma.organization.findUnique({
             where: {
@@ -153,6 +172,7 @@ export const updateOrganization = async (req: Request, res: Response) => {
                         address: true,
                     },
                 },
+                description: true,
             },
         });
 
@@ -172,6 +192,7 @@ export const updateOrganization = async (req: Request, res: Response) => {
                         address,
                     },
                 },
+                description,
             },
             select: {
                 organization_id: true,
@@ -182,12 +203,9 @@ export const updateOrganization = async (req: Request, res: Response) => {
                         address: true,
                     },
                 },
+                description: true,
             },
         });
-
-        if (!updatedOrganization) {
-            throw new Error("Organization not found");
-        }
 
         res.status(200).json({
             status: "success",
@@ -197,6 +215,7 @@ export const updateOrganization = async (req: Request, res: Response) => {
                 organization_name: updatedOrganization.user?.name ?? null,
                 organization_email: updatedOrganization.user?.email ?? null,
                 organization_address: updatedOrganization.user?.address ?? null,
+                organization_description: updatedOrganization.description,
             },
         });
     } catch (error: any) {
@@ -223,6 +242,7 @@ export const deleteOrganization = async (req: Request, res: Response) => {
                         address: true,
                     },
                 },
+                description: true,
             },
         });
 
@@ -245,6 +265,7 @@ export const deleteOrganization = async (req: Request, res: Response) => {
                 organization_name: organization.user?.name ?? null,
                 organization_email: organization.user?.email ?? null,
                 organization_address: organization.user?.address ?? null,
+                organization_description: organization.description,
             },
         });
     } catch (error: any) {
