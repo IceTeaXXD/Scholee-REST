@@ -1,9 +1,13 @@
-import express, { Request, Response, Express } from "express";
+import express from "express";
 import {
-    handleLogin
-} from "../controllers/authController";
+    handleLogin,
+    handleLogout
+} from "../controllers/auth.controller";
+
+
 const router = express.Router();
 
 router.post('/login', handleLogin);
+router.post('/logout', handleLogout);
 
 module.exports = router;
