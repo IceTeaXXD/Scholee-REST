@@ -56,6 +56,8 @@ model Scholarship {
   organization_id Int
   organization Organization @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade)
   scholarshiptype ScholarshipType[]
+  assignments Assignment[]
+  @@unique([organization_id, scholarship_id])
 }
 
 model ScholarshipType {
@@ -63,6 +65,26 @@ model ScholarshipType {
   type String
   scholarship_id Int
   scholarship Scholarship @relation(fields: [scholarship_id], references: [scholarship_id], onDelete: Cascade)
+}
+
+model Assignment {
+  organization_id Int
+  scholarship_id Int
+  assignment_id Int @id @default(autoincrement())
+  name String
+  desc String
+  scholarship Scholarship @relation(fields: [organization_id, scholarship_id], references: [organization_id, scholarship_id], onDelete: Cascade)
+  files Files[]
+  @@unique([organization_id, scholarship_id, assignment_id])
+}
+
+model Files {
+  user_id_scholarship Int @id
+  file_path String
+  organization_id Int
+  scholarship_id Int
+  assignment_id Int
+  assignment Assignment @relation(fields: [organization_id, scholarship_id, assignment_id], references: [organization_id, scholarship_id, assignment_id], onDelete: Cascade)
 }
 
 enum Role {
