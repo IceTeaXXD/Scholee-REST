@@ -9,6 +9,7 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "role" "Role" NOT NULL,
+    "refreshToken" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("user_id")
 );
