@@ -64,6 +64,27 @@ CREATE TABLE "ScholarshipType" (
     CONSTRAINT "ScholarshipType_pkey" PRIMARY KEY ("scholarshiptype_id")
 );
 
+-- CreateTable
+CREATE TABLE "Assignment" (
+    "organization_id" INTEGER NOT NULL,
+    "scholarship_id" INTEGER NOT NULL,
+    "assignment_id" SERIAL NOT NULL,
+    "desc" TEXT NOT NULL,
+
+    CONSTRAINT "Assignment_pkey" PRIMARY KEY ("assignment_id")
+);
+
+-- CreateTable
+CREATE TABLE "Files" (
+    "user_id_scholarship" INTEGER NOT NULL,
+    "file_path" TEXT NOT NULL,
+    "organization_id" INTEGER NOT NULL,
+    "scholarship_id" INTEGER NOT NULL,
+    "assignment_id" INTEGER NOT NULL,
+
+    CONSTRAINT "Files_pkey" PRIMARY KEY ("user_id_scholarship")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_user_id_key" ON "User"("user_id");
 
@@ -72,6 +93,12 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Verification_user_id_key" ON "Verification"("user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Scholarship_organization_id_scholarship_id_key" ON "Scholarship"("organization_id", "scholarship_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Assignment_organization_id_scholarship_id_assignment_id_key" ON "Assignment"("organization_id", "scholarship_id", "assignment_id");
 
 -- AddForeignKey
 ALTER TABLE "Verification" ADD CONSTRAINT "Verification_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -87,3 +114,9 @@ ALTER TABLE "Scholarship" ADD CONSTRAINT "Scholarship_organization_id_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "ScholarshipType" ADD CONSTRAINT "ScholarshipType_scholarship_id_fkey" FOREIGN KEY ("scholarship_id") REFERENCES "Scholarship"("scholarship_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Assignment" ADD CONSTRAINT "Assignment_organization_id_scholarship_id_fkey" FOREIGN KEY ("organization_id", "scholarship_id") REFERENCES "Scholarship"("organization_id", "scholarship_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Files" ADD CONSTRAINT "Files_organization_id_scholarship_id_assignment_id_fkey" FOREIGN KEY ("organization_id", "scholarship_id", "assignment_id") REFERENCES "Assignment"("organization_id", "scholarship_id", "assignment_id") ON DELETE CASCADE ON UPDATE CASCADE;
