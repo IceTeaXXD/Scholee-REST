@@ -11,6 +11,7 @@ const OrganizationRoute = require("./routes/organization.routes");
 const ScholarshipRoute = require("./routes/scholarship.routes");
 const UniversityRoute = require("./routes/university.routes");
 const authRoute = require("./routes/auth.routes")
+const soapRoute = require("./routes/soap.routes");
 
 app.use(cors());
 app.use(express.static("static"));
@@ -20,6 +21,7 @@ app.use("/api", OrganizationRoute);
 app.use("/api", ScholarshipRoute);
 app.use("/api", UniversityRoute);
 app.use("/api", authRoute);
+app.use("/api", soapRoute);
 
 app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
