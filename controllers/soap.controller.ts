@@ -8,29 +8,29 @@ const soap = require('soap')
  * Finds Referral Code first. If true then create a organization admin in REST
  * Get the id of the new admin, insert into SOAP
  */
-export const OrganizationRegistration = async (req: Request, res:Response) => {
-    try{
+export const OrganizationRegistration = async (req: Request, res: Response) => {
+    try {
         /* Verify the Referral Code */
-        const {referral_code} = req.body;
-        const url = "http://localhost:8080/ws/OrganizationRegistration?wsdl"
+        const { referral_code } = req.body;
+        const url = process.env.SOAP_URL + "/ws/OrganizationRegistration?wsdl";
         const client = await soap.createClientAsync(url);
         const result = await client.validateReferralCodeAsync(
             {
                 referral_code: referral_code
             },
             {
-                headers:{
+                headers: {
                     "API-KEY": "shortT_Key"
                 }
             }
         );
 
-        if(result[0].return != "True"){
+        if (result[0].return != "True") {
             res.status(200).json({
                 status: "Failed",
                 message: "No Such refferal Code"
             });
-        }else{
+        } else {
             /* TODO: Register The Admin Organization Admin */
 
             const org_id_rest = 1; // This is supposed to be the ID in REST
@@ -42,7 +42,7 @@ export const OrganizationRegistration = async (req: Request, res:Response) => {
                     referral_code: referral_code,
                 },
                 {
-                    headers:{
+                    headers: {
                         "API-KEY": "shortT_Key"
                     }
                 }
@@ -54,7 +54,7 @@ export const OrganizationRegistration = async (req: Request, res:Response) => {
             });
         }
 
-    }catch (error: any){
+    } catch (error: any) {
         console.error('SOAP request error:', error);
         throw error;
     }
@@ -64,18 +64,18 @@ export const OrganizationRegistration = async (req: Request, res:Response) => {
  * Should be projected from create scholarship
  * After creating scholarship in REST do it also here by calling this function
  */
-export const createUniversity =async (req:Request, res: Response) => {
-    try{
-        const {rest_uni_id, university_name} = req.body;
-        const url = "http://localhost:8080/ws/UniversityService?wsdl";
+export const createUniversity = async (req: Request, res: Response) => {
+    try {
+        const { rest_uni_id, university_name } = req.body;
+        const url = process.env.SOAP_URL + "/ws/UniversityService?wsdl";
         const client = await soap.createClientAsync(url);
         const result = await client.createUniversityAsync(
             {
-                rest_uni_id: rest_uni_id, 
+                rest_uni_id: rest_uni_id,
                 university_name: university_name,
             },
             {
-                headers:{
+                headers: {
                     "API-KEY": "shortT_Key"
                 }
             }
@@ -86,7 +86,7 @@ export const createUniversity =async (req:Request, res: Response) => {
             message: result[0].return
         });
 
-    }catch (error: any){
+    } catch (error: any) {
         console.error('SOAP request error:', error);
         throw error;
     }
@@ -96,10 +96,10 @@ export const createUniversity =async (req:Request, res: Response) => {
  * Basically just sets the acceptance of a certain uid, uis, sid with status
  * either accepted or rejected
 */
-export const scholarshipAcceptance =async (req:Request, res: Response) => {
-    try{
-        const {user_id_student, user_id_scholarship, scholarship_id, status} = req.body;
-        const url = "http://localhost:8080/ws/ScholarshipAcceptanceService?wsdl";
+export const scholarshipAcceptance = async (req: Request, res: Response) => {
+    try {
+        const { user_id_student, user_id_scholarship, scholarship_id, status } = req.body;
+        const url = process.env.SOAP_URL + "/ws/ScholarshipAcceptanceService?wsdl";
         const client = await soap.createClientAsync(url);
         const result = await client.setAcceptanceAsync(
             {
@@ -119,7 +119,7 @@ export const scholarshipAcceptance =async (req:Request, res: Response) => {
             status: "success",
             message: result[0].return
         });
-    }catch (error: any){
+    } catch (error: any) {
         console.error('SOAP request error:', error);
         throw error;
     }
