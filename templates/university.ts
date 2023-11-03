@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+const url = process.env.SOAP_URL + "/ws/UniversityService?wsdl";
+
 const headers = {
     "Content-Type": "text/xml;charset=UTF-8",
     "API-Key": process.env.SOAP_API_KEY,
@@ -27,13 +29,13 @@ const createUniversityTemplate = `
 `;
 
 export const getAllUniversities = {
-    url: process.env.SOAP_URL + "/ws/UniversityService?wsdl",
+    url,
     headers,
     body: getAllUniversitiesTemplate,
 };
 
 export const createUniversity = {
-    url: process.env.SOAP_URL + "/ws/UniversityService?wsdl",
+    url,
     headers,
     body: createUniversityTemplate,
 };

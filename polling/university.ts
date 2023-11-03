@@ -47,7 +47,7 @@ export const universitySync = async () => {
                 console.log(parsedBody);
             }
         }
-    } catch (err: any) {
-        console.error(err);
+    } catch (error) {
+        console.error('🛑 [UNIVERSITY] Error making SOAP request');
     }
 };
