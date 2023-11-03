@@ -20,7 +20,7 @@ app.use(express.static("static"));
 app.use(express.json());
 app.use("/", defaultroute);
 app.use("/api", authRoute);
-app.use(verifyJWT);
+// app.use(verifyJWT);
 app.use("/api", soapRoute);
 app.use("/api", UniversityRoute);
 app.use("/api", ScholarshipRoute);
@@ -28,5 +28,5 @@ app.use("/api", OrganizationRoute);
 
 app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
-    // sync();
+    sync();
 });
