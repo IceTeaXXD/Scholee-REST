@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { emitWarning } from "process";
 
 const prismaClient = new PrismaClient();
 
@@ -44,7 +45,7 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
                         },
                     },
                     accessTokenSecret,
-                    { expiresIn: "1d" }
+                    { expiresIn: "10s" }
                 );
                 const refreshToken = jwt.sign(
                     { email: email, userType: userType },
@@ -79,18 +80,42 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export const handleLogout = (req: Request, res: Response): void => {
+export const handleLogout = async (req: Request, res: Response): Promise<void> => {
     try {
-        // clear from cookie
-        res.clearCookie("jwt", {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
+        const cookies = req.cookies;
+        console.log("cookies",cookies);
+        if (!cookies?.jwt) {
+            res.sendStatus(204); // No content
+        }
+
+        const refreshToken = cookies.jwt;
+        // Find the user by refreshToken and clear the refreshToken
+        console.log(refreshToken)
+        const findUser = await prismaClient.user.findFirst({
+            where: {
+                refreshToken: refreshToken
+            },
         });
 
-        res.status(200).json({ message: "Logout successful" });
-    } catch (error) {
+        if (!findUser) {
+            res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true });
+            res.sendStatus(204);
+        }
+
+        // Clear the refreshToken in the database
+        await prismaClient.user.update({
+            where: { user_id: findUser?.user_id },
+            data: {
+                refreshToken: null,
+            },
+        });
+
+        res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true });
+        res.json({"message" : "Successfully Logout"})
+    } catch (error: any) {
         console.error(error);
-        res.status(500).json({ message: "Server error" });
+        res.sendStatus(500);
+    } finally {
+        await prismaClient.$disconnect();
     }
 };
