@@ -20,10 +20,9 @@ const handleRefreshToken = async (req: Request, res: Response): Promise<void> =>
         });
 
         if (!findUser) {
-            res.sendStatus(403); // Forbidden
+            res.sendStatus(403); 
         }
 
-        // Verify the refresh token
         verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string, (err, decoded: any) => {
             if (err || !findUser || findUser.email !== decoded.email) {
                 res.sendStatus(403);

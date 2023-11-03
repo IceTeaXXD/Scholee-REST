@@ -25,7 +25,7 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
             res.sendStatus(401);
         } else {
             const match = await bcrypt.compare(password, findUser.password);
-            // access and refresh token
+
             const accessTokenSecret: string = String(
                 process.env.ACCESS_TOKEN_SECRET
             );
@@ -85,7 +85,7 @@ export const handleLogout = async (req: Request, res: Response): Promise<void> =
         const cookies = req.cookies;
         console.log("cookies",cookies);
         if (!cookies?.jwt) {
-            res.sendStatus(204); // No content
+            res.sendStatus(204);
         }
 
         const refreshToken = cookies.jwt;
