@@ -2,6 +2,11 @@ import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
 import crypro from "crypto";
 import {hash} from "bcrypt";
+import { createRESTId, validateReferralCode  } from "../templates/organization";
+
+const soapRequest = require("easy-soap-request");
+const util = require("util")
+const xml2js = require("xml2js");
 
 const prisma = new PrismaClient();
 export const createOrganization = async (req: Request, res: Response) => {
@@ -11,8 +16,31 @@ export const createOrganization = async (req: Request, res: Response) => {
             email, 
             password, 
             address, 
-            organizationDescription 
+            organizationDescription,
+            referral_code 
         } = req.body;
+
+        // Verify the referral code
+        const request = await soapRequest({
+            url: validateReferralCode.url,
+            headers: validateReferralCode.headers,
+            xml: util.format(
+                validateReferralCode.body,
+                referral_code
+            )
+        })
+
+        const { body } = request.response
+        const parser = new xml2js.Parser();
+        const parsedBody = await parser.parseStringPromise(body);
+        const message =
+            parsedBody["S:Envelope"]["S:Body"][0][
+                "ns2:validateReferralCodeResponse"
+            ][0]["return"];
+
+        if (message === "false") {
+            throw new Error("Invalid referral code");
+        }
 
         // If email exists, throw error
         const user = await prisma.user.findUnique({
@@ -29,7 +57,7 @@ export const createOrganization = async (req: Request, res: Response) => {
         const saltRounds = 10; // You can adjust this number based on your security requirements
         const hashedPassword = await hash(password, saltRounds);
 
-        const newUser = await prisma.user.create({
+        const newOrganization = await prisma.user.create({
             data: {
                 name,
                 email,
@@ -51,14 +79,44 @@ export const createOrganization = async (req: Request, res: Response) => {
             },
         });
 
+        // Create a new organization in SOAP
+        // TODO: SOMEHOW IT'S ALWAYS ERROR BRO
+        const organizationId = newOrganization.user_id;
+        
+        const requestOrgSoap = await soapRequest({
+            url: createRESTId.url,
+            headers: createRESTId.headers,
+            xml: util.format(
+                createRESTId.body,
+                organizationId
+            )
+        })
+
+        console.log(requestOrgSoap)
+
+        const { body: bodyOrgSoap } = requestOrgSoap.response
+        const parserOrgSoap = new xml2js.Parser();
+        const parsedBodyOrgSoap = await parserOrgSoap.parseStringPromise(bodyOrgSoap);
+
+        const messageOrgSoap =
+            parsedBodyOrgSoap["S:Envelope"]["S:Body"][0][
+                "ns2:createRESTIdResponse"
+            ][0]["return"];
+
+        console.log(messageOrgSoap)
+
+        if (messageOrgSoap != "true") {
+            throw new Error("SOAP request failed");
+        }
+
         res.status(200).json({
             status: "success",
             message: "Organization created successfully",
             data: {
-                organization_id: newUser.user_id,
-                organization_name: newUser.name,
-                organization_email: newUser.email,
-                organization_address: newUser.address,
+                organization_id: newOrganization.user_id,
+                organization_name: newOrganization.name,
+                organization_email: newOrganization.email,
+                organization_address: newOrganization.address,
                 organization_description: organizationDescription,
             },
         });
