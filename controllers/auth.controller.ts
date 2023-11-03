@@ -106,7 +106,7 @@ export const handleLogout = async (req: Request, res: Response): Promise<void> =
         await prismaClient.user.update({
             where: { user_id: findUser?.user_id },
             data: {
-                refreshToken: null,
+                refreshToken: "",
             },
         });
 

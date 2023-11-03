@@ -20,7 +20,7 @@ model User {
   university University?
   organization Organization?
   verification Verification?
-  refreshToken String
+  refreshToken String @default("")
 }
 
 model Verification {
