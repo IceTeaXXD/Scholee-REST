@@ -15,6 +15,7 @@ const ScholarshipRoute = require("./routes/scholarship.routes");
 const UniversityRoute = require("./routes/university.routes");
 const authRoute = require("./routes/auth.routes")
 const soapRoute = require("./routes/soap.routes");
+const refreshRoute = require("./routes/refresh.routes")
 
 app.use(cors());
 app.use(cookies());
@@ -22,7 +23,7 @@ app.use(express.static("static"));
 app.use(express.json());
 app.use("/", defaultroute);
 app.use("/api", authRoute);
-// app.use(verifyJWT);
+app.use("/api", refreshRoute);
 app.use("/api", soapRoute);
 app.use(verifyJWT);
 // app.use("/api", soapRoute);
