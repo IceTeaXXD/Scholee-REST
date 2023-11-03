@@ -1,10 +1,9 @@
 import express from "express";
-import { OrganizationRegistration, createUniversity } from "../controllers/soap.controller";
+import { scholarshipAcceptance, OrganizationRegistration } from "../controllers/soap.controller";
 
 const router = express.Router();
 
-router.post("/orgRegister", OrganizationRegistration);
-router.post("/createUniversitySOAP", createUniversity);
-router.get("/getAllUniversitiesSOAP", createUniversity);
+router.post("/setAcceptance", scholarshipAcceptance);
+router.get("/organizationRegis", OrganizationRegistration)
 
 module.exports = router;
