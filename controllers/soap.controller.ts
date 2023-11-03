@@ -124,3 +124,26 @@ export const scholarshipAcceptance = async (req: Request, res: Response) => {
         throw error;
     }
 }
+
+export const getAllUniversities = async (req: Request, res: Response) => {
+    try {
+        const url = process.env.SOAP_URL + "/ws/UniversityService?wsdl";
+        const client = await soap.createClientAsync(url);
+        const result = await client.getAllUniversitiesAsync(
+            {},
+            {
+                headers: {
+                    "API-KEY": "shortT_Key"
+                }
+            }
+        );
+
+        res.status(200).json({
+            status: "success",
+            message: result[0].return
+        });
+    } catch (error: any) {
+        console.error('SOAP request error:', error);
+        throw error;
+    }
+}
