@@ -80,7 +80,6 @@ export const createOrganization = async (req: Request, res: Response) => {
         });
 
         // Create a new organization in SOAP
-        // TODO: SOMEHOW IT'S ALWAYS ERROR BRO
         const organizationId = newOrganization.user_id;
         
         const requestOrgSoap = await soapRequest({
@@ -88,7 +87,8 @@ export const createOrganization = async (req: Request, res: Response) => {
             headers: createRESTId.headers,
             xml: util.format(
                 createRESTId.body,
-                organizationId
+                organizationId,
+                referral_code
             )
         })
 
@@ -103,9 +103,9 @@ export const createOrganization = async (req: Request, res: Response) => {
                 "ns2:createRESTIdResponse"
             ][0]["return"];
 
-        console.log(messageOrgSoap)
+        console.log(messageOrgSoap[0])
 
-        if (messageOrgSoap != "true") {
+        if (messageOrgSoap != "Register Success") {
             throw new Error("SOAP request failed");
         }
 
