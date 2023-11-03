@@ -13,8 +13,7 @@ const setAcceptanceTemplate = `
     <Body>
         <setAcceptance xmlns="http://services.soap.orden.com/">
             <user_id_student xmlns="">%d</user_id_student>
-            <user_id_scholarship xmlns="">%d</user_id_scholarship>
-            <scholarship_id xmlns="">%d</scholarship_id>
+            <scholarship_id_rest xmlns="">%d</scholarship_id_rest>
             <status xmlns="">%s</status>
         </setAcceptance>
     </Body>
