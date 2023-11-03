@@ -7,7 +7,6 @@ interface CustomRequest extends Request {
     organization: string | null;
 }
 const verifyJWT = (req: Request, res: Response, next:NextFunction): void => {
-    var customReq = req as CustomRequest;
     const authHeader = req.headers.authorization || req.headers.Authorization;
     const authHeaderString = Array.isArray(authHeader) ? authHeader[0] : authHeader;
 

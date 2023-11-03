@@ -45,7 +45,7 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
                         },
                     },
                     accessTokenSecret,
-                    { expiresIn: "10s" }
+                    { expiresIn: "10m" }
                 );
                 const refreshToken = jwt.sign(
                     { email: email, userType: userType },
