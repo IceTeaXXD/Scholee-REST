@@ -79,7 +79,8 @@ model Assignment {
 }
 
 model Files {
-  user_id_scholarship Int @id
+  file_id Int @id @default(autoincrement())
+  user_id_student Int
   file_path String
   organization_id Int
   scholarship_id Int
