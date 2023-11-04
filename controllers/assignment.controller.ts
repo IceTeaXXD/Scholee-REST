@@ -1,7 +1,7 @@
-import { Prisma, PrismaClient, Role } from "@prisma/client";
-import { Request, Response } from "express";
+// import { Prisma, PrismaClient, Role } from "@prisma/client";
+// import { Request, Response } from "express";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 export const getAssignment = async (req: Request, res: Response) => {
     try{

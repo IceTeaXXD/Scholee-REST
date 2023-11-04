@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { verify, sign } from 'jsonwebtoken';
+
+import { emitWarning } from "process";
 
 const prismaClient = new PrismaClient();
 
@@ -24,7 +27,7 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
             res.sendStatus(401);
         } else {
             const match = await bcrypt.compare(password, findUser.password);
-            // access and refresh token
+
             const accessTokenSecret: string = String(
                 process.env.ACCESS_TOKEN_SECRET
             );
@@ -44,7 +47,7 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
                         },
                     },
                     accessTokenSecret,
-                    { expiresIn: "10s" }
+                    { expiresIn: "10m" }
                 );
                 const refreshToken = jwt.sign(
                     { email: email, userType: userType },
@@ -79,18 +82,88 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export const handleLogout = (req: Request, res: Response): void => {
+export const handleLogout = async (req: Request, res: Response): Promise<void> => {
     try {
-        // clear from cookie
-        res.clearCookie("jwt", {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
+        const cookies = req.cookies;
+        console.log("cookies",cookies);
+        if (!cookies?.jwt) {
+            res.sendStatus(204);
+        }
+
+        const refreshToken = cookies.jwt;
+        // Find the user by refreshToken and clear the refreshToken
+        console.log(refreshToken)
+        const findUser = await prismaClient.user.findFirst({
+            where: {
+                refreshToken: refreshToken
+            },
         });
 
-        res.status(200).json({ message: "Logout successful" });
+        if (!findUser) {
+            res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true });
+            res.sendStatus(204);
+        }
+
+        // Clear the refreshToken in the database
+        await prismaClient.user.update({
+            where: { user_id: findUser?.user_id },
+            data: {
+                refreshToken: "",
+            },
+        });
+
+        res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true });
+        res.json({"message" : "Successfully Logout"})
+    } catch (error: any) {
+        console.error(error);
+        res.sendStatus(500);
+    } finally {
+        await prismaClient.$disconnect();
+    }
+};
+
+export const handleRefreshToken = async (req: Request, res: Response): Promise<void> => {
+    const cookies = req.cookies;
+
+    if (!cookies?.jwt) {
+        res.sendStatus(401);
+    }
+
+    const refreshToken: string = cookies.jwt;
+
+    try {
+        const findUser = await prismaClient.user.findFirst({
+            where: {
+                refreshToken: refreshToken,
+            },
+        });
+
+        if (!findUser) {
+            res.sendStatus(403); 
+        }
+
+        verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string, (err, decoded: any) => {
+            if (err || !findUser || findUser.email !== decoded.email) {
+                res.sendStatus(403);
+                return;
+            }
+            const email = findUser.email;
+            const roles = findUser.role;
+            const accessToken: string = sign(
+                {
+                    UserInfo: {
+                        email: decoded.email,
+                        roles,
+                    },
+                },
+                process.env.ACCESS_TOKEN_SECRET as string,
+                { expiresIn: '10m' }
+            );
+
+            res.json({ email,roles, accessToken });
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Server error" });
+        res.sendStatus(500);
     }
 };
