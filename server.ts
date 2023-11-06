@@ -16,14 +16,22 @@ const UniversityRoute = require("./routes/university.routes")
 const authRoute = require("./routes/auth.routes")
 const soapRoute = require("./routes/soap.routes")
 
-app.use(cors())
-app.use(cookies())
-app.use(express.static("static"))
-app.use(express.json())
-app.use("/", defaultroute)
-app.use("/api", authRoute)
-app.use("/api", soapRoute)
-app.use(verifyJWT)
+app.use(cors({
+    origin: 'http://localhost:3000', 
+    credentials: true,
+}));
+app.use(cookies());
+// app.use(function(req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
+app.use(express.static("static"));
+app.use(express.json());
+app.use("/", defaultroute);
+app.use("/api", authRoute);
+app.use("/api", soapRoute);
+app.use(verifyJWT);
 // app.use("/api", soapRoute);
 app.use("/api", UniversityRoute)
 app.use("/api", ScholarshipRoute)

@@ -3,8 +3,9 @@ import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { verify, sign } from "jsonwebtoken"
-
-import { emitWarning } from "process"
+import { access } from "fs"
+import { serialize } from "cookie"
+import Cookies from "js-cookie"
 
 const prismaClient = new PrismaClient()
 
@@ -144,6 +145,7 @@ export const handleRefreshToken = async (
 
     if (!cookies?.jwt) {
         res.sendStatus(401)
+        return
     }
 
     const refreshToken: string = cookies.jwt
@@ -157,6 +159,7 @@ export const handleRefreshToken = async (
 
         if (!findUser) {
             res.sendStatus(403)
+            return
         }
 
         verify(
@@ -186,5 +189,6 @@ export const handleRefreshToken = async (
     } catch (error) {
         console.error(error)
         res.sendStatus(500)
+        return
     }
 }

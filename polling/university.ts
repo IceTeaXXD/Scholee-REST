@@ -49,7 +49,6 @@ export const universitySync = async () => {
                 const { body } = response
                 const parser = new xml2js.Parser()
                 const parsedBody = await parser.parseStringPromise(body)
-                console.log(parsedBody)
             }
         }
     } catch (error) {
