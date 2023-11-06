@@ -1,12 +1,12 @@
-import dotenv from "dotenv";
-dotenv.config();
+import dotenv from "dotenv"
+dotenv.config()
 
-const url = process.env.SOAP_URL + "/ws/UniversityService?wsdl";
+const url = process.env.SOAP_URL + "/ws/UniversityService?wsdl"
 
 const headers = {
     "Content-Type": "text/xml;charset=UTF-8",
-    "API-Key": process.env.SOAP_API_KEY,
-};
+    "API-Key": process.env.SOAP_API_KEY
+}
 
 const getAllUniversitiesTemplate = `
     <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -15,7 +15,7 @@ const getAllUniversitiesTemplate = `
             </getAllUniversities>
         </Body>
     </Envelope>
-    `;
+    `
 
 const createUniversityTemplate = `
     <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -26,16 +26,16 @@ const createUniversityTemplate = `
         </createUniversity>
     </Body>
     </Envelope>
-`;
+`
 
 export const getAllUniversities = {
     url,
     headers,
-    body: getAllUniversitiesTemplate,
-};
+    body: getAllUniversitiesTemplate
+}
 
 export const createUniversity = {
     url,
     headers,
-    body: createUniversityTemplate,
-};
+    body: createUniversityTemplate
+}

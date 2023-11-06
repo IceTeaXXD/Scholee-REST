@@ -1,5 +1,8 @@
-import express from "express";
-import { createAssignment, getAssignment } from "../controllers/assignment.controller";
+import express from "express"
+import {
+    createAssignment,
+    getAssignment
+} from "../controllers/assignment.controller"
 
 const router = express.Router()
 

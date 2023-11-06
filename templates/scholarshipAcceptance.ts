@@ -1,12 +1,12 @@
-import dotenv from "dotenv";
-dotenv.config();
+import dotenv from "dotenv"
+dotenv.config()
 
 const headers = {
     "Content-Type": "text/xml;charset=UTF-8",
-    "API-Key": process.env.SOAP_API_KEY,
-};
+    "API-Key": process.env.SOAP_API_KEY
+}
 
-const url = process.env.SOAP_URL + "/ws/ScholarshipAcceptanceService?wsdl";
+const url = process.env.SOAP_URL + "/ws/ScholarshipAcceptanceService?wsdl"
 
 const setAcceptanceTemplate = `
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -18,10 +18,10 @@ const setAcceptanceTemplate = `
         </setAcceptance>
     </Body>
 </Envelope>
-`;
+`
 
 export const setAcceptance = {
-   url,
-   headers,
-   body: setAcceptanceTemplate
-};
+    url,
+    headers,
+    body: setAcceptanceTemplate
+}

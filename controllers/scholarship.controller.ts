@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
-import { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client"
+import { Request, Response } from "express"
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 export const createScholarship = async (req: Request, res: Response) => {
     try {
@@ -13,24 +13,24 @@ export const createScholarship = async (req: Request, res: Response) => {
             contact_name,
             contact_email,
             organization_id,
-            type,
-        } = req.body;
+            type
+        } = req.body
 
         const existingOrganization = await prisma.organization.findUnique({
             select: {
-                user :{
+                user: {
                     select: {
-                        name: true,
-                    },
-                },
+                        name: true
+                    }
+                }
             },
             where: {
-                organization_id,
-            },
-        });
+                organization_id
+            }
+        })
 
         if (!existingOrganization) {
-            throw new Error("Organization not found");
+            throw new Error("Organization not found")
         }
 
         const scholarship = await prisma.scholarship.create({
@@ -44,14 +44,14 @@ export const createScholarship = async (req: Request, res: Response) => {
                 organization_id,
                 scholarshiptype: {
                     create: type.map((element: string) => ({
-                        type: element,
-                    })),
-                },
+                        type: element
+                    }))
+                }
             },
             include: {
-                scholarshiptype: true,
-            },
-        });
+                scholarshiptype: true
+            }
+        })
 
         res.status(201).json({
             status: "success",
@@ -65,27 +65,27 @@ export const createScholarship = async (req: Request, res: Response) => {
                 coverage: scholarship.coverage,
                 contact_name: scholarship.contact_name,
                 contact_email: scholarship.contact_email,
-                type: scholarship.scholarshiptype,
+                type: scholarship.scholarshiptype
             }
-        });
+        })
     } catch (error: any) {
         res.status(500).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}
 
 export const getScholarships = async (req: Request, res: Response) => {
     try {
         const scholarships = await prisma.scholarship.findMany({
             include: {
-                scholarshiptype: true,
-            },
-        });
+                scholarshiptype: true
+            }
+        })
 
         if (!scholarships) {
-            throw new Error("Scholarships not found");
+            throw new Error("Scholarships not found")
         }
 
         res.status(200).json({
@@ -101,32 +101,32 @@ export const getScholarships = async (req: Request, res: Response) => {
                     coverage: scholarship.coverage,
                     contact_name: scholarship.contact_name,
                     contact_email: scholarship.contact_email,
-                    type: scholarship.scholarshiptype,
-                };
-            }),
-        });
+                    type: scholarship.scholarshiptype
+                }
+            })
+        })
     } catch (error: any) {
         res.status(500).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}
 
 export const getScholarship = async (req: Request, res: Response) => {
     try {
         const scholarship = await prisma.scholarship.findUnique({
             where: {
-                scholarship_id: Number(req.params.id),
+                scholarship_id: Number(req.params.id)
             },
             include: {
                 scholarshiptype: true,
-                organization: true,
-            },
-        });
+                organization: true
+            }
+        })
 
         if (!scholarship) {
-            throw new Error("Scholarship not found");
+            throw new Error("Scholarship not found")
         }
 
         res.status(200).json({
@@ -141,16 +141,16 @@ export const getScholarship = async (req: Request, res: Response) => {
                 coverage: scholarship.coverage,
                 contact_name: scholarship.contact_name,
                 contact_email: scholarship.contact_email,
-                type: scholarship.scholarshiptype,
-            },
-        });
+                type: scholarship.scholarshiptype
+            }
+        })
     } catch (error: any) {
         res.status(500).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}
 
 export const updateScholarship = async (req: Request, res: Response) => {
     try {
@@ -161,26 +161,26 @@ export const updateScholarship = async (req: Request, res: Response) => {
             coverage,
             contact_name,
             contact_email,
-            type,
-        } = req.body;
-        const { id } = req.params;
+            type
+        } = req.body
+        const { id } = req.params
         const existingScholarship = await prisma.scholarship.findUnique({
             where: {
-                scholarship_id: Number(id),
+                scholarship_id: Number(id)
             },
             include: {
                 scholarshiptype: true,
-                organization: true,
-            },
-        });
+                organization: true
+            }
+        })
 
         if (!existingScholarship) {
-            return res.status(404).json({ message: "Scholarship not found" });
+            return res.status(404).json({ message: "Scholarship not found" })
         }
 
         const updatedScholarship = await prisma.scholarship.update({
             where: {
-                scholarship_id: Number(id),
+                scholarship_id: Number(id)
             },
             data: {
                 title,
@@ -191,18 +191,18 @@ export const updateScholarship = async (req: Request, res: Response) => {
                 contact_email,
                 scholarshiptype: {
                     deleteMany: {
-                        scholarship_id: Number(id),
+                        scholarship_id: Number(id)
                     },
                     create: type.map((element: string) => ({
-                        type: element,
-                    })),
-                },
+                        type: element
+                    }))
+                }
             },
             include: {
                 scholarshiptype: true,
-                organization: true,
-            },
-        });
+                organization: true
+            }
+        })
 
         res.status(200).json({
             status: "success",
@@ -216,44 +216,44 @@ export const updateScholarship = async (req: Request, res: Response) => {
                 coverage: updatedScholarship.coverage,
                 contact_name: updatedScholarship.contact_name,
                 contact_email: updatedScholarship.contact_email,
-                type: updatedScholarship.scholarshiptype,
-            },
-        });
+                type: updatedScholarship.scholarshiptype
+            }
+        })
     } catch (error: any) {
         res.status(500).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}
 
 export const deleteScholarship = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
-        
+        const { id } = req.params
+
         const existingScholarship = await prisma.scholarship.findUnique({
             where: {
-                scholarship_id: Number(id),
+                scholarship_id: Number(id)
             },
             include: {
                 scholarshiptype: true,
-                organization: true,
-            },
-        });
+                organization: true
+            }
+        })
 
         if (!existingScholarship) {
-            throw new Error("Scholarship not found");
+            throw new Error("Scholarship not found")
         }
 
         const scholarship = await prisma.scholarship.delete({
             where: {
-                scholarship_id: Number(id),
+                scholarship_id: Number(id)
             },
             include: {
                 scholarshiptype: true,
-                organization: true,
-            },
-        });
+                organization: true
+            }
+        })
 
         res.status(200).json({
             status: "success",
@@ -267,13 +267,13 @@ export const deleteScholarship = async (req: Request, res: Response) => {
                 coverage: scholarship.coverage,
                 contact_name: scholarship.contact_name,
                 contact_email: scholarship.contact_email,
-                type: scholarship.scholarshiptype,
-            },
-        });
+                type: scholarship.scholarshiptype
+            }
+        })
     } catch (error: any) {
         res.status(500).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}

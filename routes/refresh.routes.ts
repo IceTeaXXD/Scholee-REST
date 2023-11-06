@@ -1,10 +1,8 @@
-import express from "express";
-import {
-    handleRefreshToken
-} from "../controllers/refreshToken.controller";
+import express from "express"
+// import { handleRefreshToken } from "../controllers/refreshToken.controller"
 
-const router = express.Router();
+const router = express.Router()
 
-router.get("/refresh", handleRefreshToken);
+// router.get("/refresh", handleRefreshToken)
 
-module.exports = router;
+module.exports = router
