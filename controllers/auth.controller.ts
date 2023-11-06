@@ -3,8 +3,10 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { verify, sign } from 'jsonwebtoken';
+import { access } from "fs";
+import { serialize } from 'cookie';
+import Cookies from 'js-cookie';
 
-import { emitWarning } from "process";
 
 const prismaClient = new PrismaClient();
 
@@ -65,12 +67,37 @@ export const handleLogin = async (req: Request, res: Response): Promise<void> =>
                         },
                     });
                 }
-                res.cookie("jwt", refreshToken, {
+                // Cookies.set('jwt', refreshToken, {
+                //     httpOnly: true,
+                //     maxAges: 24 * 60 * 1000,
+                //     secure: false,
+                //     sameSite: 'none'
+                // });
+                // console.log("/////")
+                // const serialized = serialize('jwt', refreshToken, {
+                //     httpOnly: true,
+                //     secure: false, 
+                //     sameSite: 'none',
+                //     path: '/',
+                //     maxAge: 60 * 60 * 24 * 30,
+                // });
+                // console.log("fhdjshfjkadshfjkshk")
+                // console.log(serialize);
+                // res.setHeader('Access-Control-Allow-Origin', 'https://localhost:3000');
+                
+                console.log("fjdsahjkdshjkadshdsa")
+                const cook = res.cookie("jwt", refreshToken, {
                     httpOnly: true,
-                    secure: true,
+                    secure: false,
                     sameSite: "none",
                     maxAge: 24 * 60 * 60 * 1000,
                 });
+                console.log("acc token")
+                console.log(accessToken)
+                console.log(refreshToken)
+                res.setHeader('Access-Control-Allow-Credentials', 'true');
+                res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
+                // res.setHeader('Set-Cookie', serialized);
                 res.json({ userType, accessToken });
             } else {
                 res.sendStatus(401);
@@ -127,6 +154,7 @@ export const handleRefreshToken = async (req: Request, res: Response): Promise<v
 
     if (!cookies?.jwt) {
         res.sendStatus(401);
+        return;
     }
 
     const refreshToken: string = cookies.jwt;
@@ -140,6 +168,7 @@ export const handleRefreshToken = async (req: Request, res: Response): Promise<v
 
         if (!findUser) {
             res.sendStatus(403); 
+            return;
         }
 
         verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string, (err, decoded: any) => {
@@ -165,5 +194,6 @@ export const handleRefreshToken = async (req: Request, res: Response): Promise<v
     } catch (error) {
         console.error(error);
         res.sendStatus(500);
+        return;
     }
 };
