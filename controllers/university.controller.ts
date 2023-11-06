@@ -1,51 +1,51 @@
-import { PrismaClient, Role } from "@prisma/client";
-import { Request, Response } from "express";
-import crypro from "crypto";
-import {hash} from "bcrypt";
+import { PrismaClient, Role } from "@prisma/client"
+import { Request, Response } from "express"
+import crypro from "crypto"
+import { hash } from "bcrypt"
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 export const createUniversity = async (req: Request, res: Response) => {
     try {
         const { name, email, password, address, universityDescription } =
-            req.body;
+            req.body
 
         // If email exists, throw error
         const user = await prisma.user.findUnique({
             where: {
-                email,
-            },
-        });
+                email
+            }
+        })
 
         if (user) {
-            throw new Error("Email already exists");
+            throw new Error("Email already exists")
         }
 
         // Hash the password
-        const saltRounds = 10;
-        const hashedPassword = await hash(password, saltRounds);
+        const saltRounds = 10
+        const hashedPassword = await hash(password, saltRounds)
 
         const newUser = await prisma.user.create({
             data: {
                 name,
                 email,
-                password : hashedPassword,
+                password: hashedPassword,
                 address,
                 role: Role.university,
                 university: {
                     create: {
-                        description: universityDescription,
-                    },
+                        description: universityDescription
+                    }
                 },
                 verification: {
                     create: {
                         verification_token: crypro
                             .randomBytes(8)
-                            .toString("hex"),
-                    },
-                },
-            },
-        });
+                            .toString("hex")
+                    }
+                }
+            }
+        })
 
         res.status(200).json({
             status: "success",
@@ -55,16 +55,16 @@ export const createUniversity = async (req: Request, res: Response) => {
                 university_name: newUser.name,
                 university_email: newUser.email,
                 university_address: newUser.address,
-                university_description: universityDescription,
-            },
-        });
+                university_description: universityDescription
+            }
+        })
     } catch (error: any) {
         res.status(400).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}
 
 export const getUniversities = async (req: Request, res: Response) => {
     try {
@@ -75,12 +75,12 @@ export const getUniversities = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true,
-                    },
+                        address: true
+                    }
                 },
-                description: true,
-            },
-        });
+                description: true
+            }
+        })
 
         res.status(200).json({
             status: "success",
@@ -91,25 +91,25 @@ export const getUniversities = async (req: Request, res: Response) => {
                     university_name: university.user?.name,
                     university_email: university.user?.email,
                     university_address: university.user?.address,
-                    university_description: university.description,
-                };
-            }),
-        });
+                    university_description: university.description
+                }
+            })
+        })
     } catch (error: any) {
         res.status(400).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}
 
 export const getUniversity = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params
 
         const university = await prisma.university.findUnique({
             where: {
-                university_id: Number(id),
+                university_id: Number(id)
             },
             select: {
                 university_id: true,
@@ -117,15 +117,15 @@ export const getUniversity = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true,
-                    },
+                        address: true
+                    }
                 },
-                description: true,
-            },
-        });
+                description: true
+            }
+        })
 
         if (!university) {
-            throw new Error("University not found");
+            throw new Error("University not found")
         }
 
         res.status(200).json({
@@ -136,30 +136,25 @@ export const getUniversity = async (req: Request, res: Response) => {
                 university_name: university.user?.name,
                 university_email: university.user?.email,
                 university_address: university.user?.address,
-                university_description: university.description,
-            },
-        });
+                university_description: university.description
+            }
+        })
     } catch (error: any) {
         res.status(400).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}
 
 export const updateUniversity = async (req: Request, res: Response) => {
     try {
-        const { 
-            name, 
-            email, 
-            address, 
-            description 
-        } = req.body;
-        const { id } = req.params;
+        const { name, email, address, description } = req.body
+        const { id } = req.params
 
         const university = await prisma.university.findUnique({
             where: {
-                university_id: Number(id),
+                university_id: Number(id)
             },
             select: {
                 university_id: true,
@@ -167,20 +162,20 @@ export const updateUniversity = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true,
-                    },
+                        address: true
+                    }
                 },
-                description: true,
-            },
-        });
+                description: true
+            }
+        })
 
         if (!university) {
-            throw new Error("University not found");
+            throw new Error("University not found")
         }
 
         const updatedUniversity = await prisma.university.update({
             where: {
-                university_id: Number(id),
+                university_id: Number(id)
             },
             data: {
                 description,
@@ -188,9 +183,9 @@ export const updateUniversity = async (req: Request, res: Response) => {
                     update: {
                         name,
                         email,
-                        address,
-                    },
-                },
+                        address
+                    }
+                }
             },
             select: {
                 university_id: true,
@@ -198,12 +193,12 @@ export const updateUniversity = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true,
-                    },
+                        address: true
+                    }
                 },
-                description: true,
-            },
-        });
+                description: true
+            }
+        })
 
         res.status(200).json({
             status: "success",
@@ -213,23 +208,23 @@ export const updateUniversity = async (req: Request, res: Response) => {
                 university_name: updatedUniversity.user?.name,
                 university_email: updatedUniversity.user?.email,
                 university_address: updatedUniversity.user?.address,
-                university_description: updatedUniversity.description,
-            },
-        });
+                university_description: updatedUniversity.description
+            }
+        })
     } catch (error: any) {
         res.status(400).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}
 
 export const deleteUniversity = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params
         const university = await prisma.university.findUnique({
             where: {
-                university_id: Number(id),
+                university_id: Number(id)
             },
             select: {
                 university_id: true,
@@ -237,23 +232,23 @@ export const deleteUniversity = async (req: Request, res: Response) => {
                     select: {
                         name: true,
                         email: true,
-                        address: true,
-                    },
+                        address: true
+                    }
                 },
-                description: true,
-            },
-        });
+                description: true
+            }
+        })
 
         if (!university) {
-            throw new Error("University not found");
+            throw new Error("University not found")
         }
 
         // delete the user
         await prisma.user.delete({
             where: {
-                user_id: Number(id),
-            },
-        });
+                user_id: Number(id)
+            }
+        })
 
         res.status(200).json({
             status: "success",
@@ -263,13 +258,13 @@ export const deleteUniversity = async (req: Request, res: Response) => {
                 university_name: university.user?.name,
                 university_email: university.user?.email,
                 university_address: university.user?.address,
-                university_description: university.description,
-            },
-        });
+                university_description: university.description
+            }
+        })
     } catch (error: any) {
         res.status(400).json({
             status: "error",
-            message: error.message,
-        });
+            message: error.message
+        })
     }
-};
+}

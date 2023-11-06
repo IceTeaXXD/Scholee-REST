@@ -1,14 +1,14 @@
-import express from "express";
+import express from "express"
 import {
     handleLogin,
     handleLogout,
     handleRefreshToken
-} from "../controllers/auth.controller";
+} from "../controllers/auth.controller"
 
-const router = express.Router();
+const router = express.Router()
 
-router.post('/login', handleLogin);
-router.post('/logout', handleLogout);
-router.get('/refresh', handleRefreshToken);
+router.post("/login", handleLogin)
+router.post("/logout", handleLogout)
+router.get("/refresh", handleRefreshToken)
 
-module.exports = router;
+module.exports = router

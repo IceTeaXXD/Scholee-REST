@@ -77,13 +77,14 @@ CREATE TABLE "Assignment" (
 
 -- CreateTable
 CREATE TABLE "Files" (
-    "user_id_scholarship" INTEGER NOT NULL,
+    "file_id" SERIAL NOT NULL,
+    "user_id_student" INTEGER NOT NULL,
     "file_path" TEXT NOT NULL,
     "organization_id" INTEGER NOT NULL,
     "scholarship_id" INTEGER NOT NULL,
     "assignment_id" INTEGER NOT NULL,
 
-    CONSTRAINT "Files_pkey" PRIMARY KEY ("user_id_scholarship")
+    CONSTRAINT "Files_pkey" PRIMARY KEY ("file_id")
 );
 
 -- CreateIndex

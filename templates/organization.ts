@@ -1,12 +1,12 @@
-import dotenv from "dotenv";
-dotenv.config();
+import dotenv from "dotenv"
+dotenv.config()
 
 const headers = {
     "Content-Type": "text/xml;charset=UTF-8",
-    "API-KEY": "shortT_Key",
+    "API-KEY": "shortT_Key"
 }
 
-const url = process.env.SOAP_URL + "/ws/OrganizationRegistration?wsdl";
+const url = process.env.SOAP_URL + "/ws/OrganizationRegistration?wsdl"
 
 const createRESTIdTemplate = `
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -17,7 +17,7 @@ const createRESTIdTemplate = `
         </createRESTId>
     </Body>
 </Envelope>
-`;
+`
 
 const validateReferralCodeTemplate = `
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -27,7 +27,7 @@ const validateReferralCodeTemplate = `
         </validateReferralCode>
     </Body>
 </Envelope>
-`;
+`
 
 export const createRESTId = {
     url,
@@ -39,4 +39,4 @@ export const validateReferralCode = {
     url,
     headers,
     body: validateReferralCodeTemplate
-};
+}

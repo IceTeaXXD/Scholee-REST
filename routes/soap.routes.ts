@@ -1,9 +1,7 @@
-import express from "express";
-import { scholarshipAcceptance, OrganizationRegistration } from "../controllers/soap.controller";
+import express from "express"
+import { scholarshipAcceptance } from "../controllers/soap.controller"
+const router = express.Router()
 
-const router = express.Router();
+router.post("/setacceptance", scholarshipAcceptance)
 
-router.post("/setAcceptance", scholarshipAcceptance);
-router.get("/organizationRegis", OrganizationRegistration)
-
-module.exports = router;
+module.exports = router
