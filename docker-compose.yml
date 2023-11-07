@@ -1,0 +1,25 @@
+services:  
+  rest-service-db:
+      image: postgres:latest
+      restart: always
+      ports:
+        - 5432:5432
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: scholeeadmin
+      volumes:
+        - "./prisma/migrations/db:/docker-entrypoint-initdb.d"
+
+  rest-service:
+    image: node:latest
+    build: 
+      context: ../rest-service
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    restart: always
+    depends_on:
+      - rest-service-db
+    environment:
+      DATABASE_URL: postgresql://postgres:password@rest-service-db:5432/scholeeadmin
