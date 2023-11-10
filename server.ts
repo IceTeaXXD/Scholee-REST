@@ -16,7 +16,7 @@ const UniversityRoute = require("./routes/university.routes")
 const AssignmentRoute = require("./routes/assignment.routes")
 const authRoute = require("./routes/auth.routes")
 const soapRoute = require("./routes/soap.routes")
-const fileRoute = require("./routes/file.routes")
+const fileRoute = require("./routes/files.routes")
 
 app.use(
   cors({
