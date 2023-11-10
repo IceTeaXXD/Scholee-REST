@@ -50,7 +50,7 @@ export const scholarshipsSync = async () => {
                             coverage: data.coverage,
                             contact_name: data.contact_name,
                             contact_email: data.contact_email,
-                            organization_id: scholarship.user_id_scholarship_rest[0]
+                            organization_id: Number(scholarship.user_id_scholarship_rest[0])
                         }
                     }
                 )
@@ -66,6 +66,7 @@ export const scholarshipsSync = async () => {
                     }
                 )
 
+
                 const { body } = response
 
                 const parser = new xml2js.Parser()
@@ -74,12 +75,15 @@ export const scholarshipsSync = async () => {
                 parsedBody["S:Envelope"]["S:Body"][0][
                     "ns2:setRESTscholarshipIDResponse"
                 ][0]["return"]
+
+                console.log(result[0])
             }
         }
 
         console.log("Scholarship Sync Success");
 
     }catch (error: any){
+        console.error(error)
         console.error("Failed to Synchronize Scholarships");
     }
 }
