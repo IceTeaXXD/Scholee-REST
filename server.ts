@@ -15,6 +15,7 @@ const ScholarshipRoute = require("./routes/scholarship.routes")
 const UniversityRoute = require("./routes/university.routes")
 const AssignmentRoute = require("./routes/assignment.routes")
 const authRoute = require("./routes/auth.routes")
+const fileRoute = require("./routes/files.routes")
 const soapRoute = require("./routes/soap.routes")
 
 app.use(cors({
@@ -32,13 +33,13 @@ app.use(express.json());
 app.use("/", defaultroute);
 app.use("/api", authRoute);
 app.use("/api", soapRoute);
-app.use(verifyJWT);
+// app.use(verifyJWT);
 // app.use("/api", soapRoute);
 app.use("/api", UniversityRoute)
 app.use("/api", ScholarshipRoute)
 app.use("/api", OrganizationRoute)
 app.use("/api", AssignmentRoute)
-
+app.use("/api", fileRoute)
 app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
     sync()
