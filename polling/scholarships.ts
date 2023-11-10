@@ -1,12 +1,14 @@
 import { PrismaClient, Role } from "@prisma/client"
 import { getAllScholarship, setScholarshipREST } from "../templates/scholarship"
+import { setAcceptanceScholarshipIDREST } from "../templates/scholarshipAcceptance"
+import dotenv from "dotenv"
+
 const xml2js = require("xml2js")
 const soapRequest = require("easy-soap-request")
 const util = require("util")
 const prisma = new PrismaClient()
 const fetch = require('node-fetch');
 
-import dotenv from "dotenv"
 dotenv.config()
 
 export const scholarshipsSync = async () => {
@@ -41,6 +43,7 @@ export const scholarshipsSync = async () => {
                 })
 
                 /* Create the Scholarship */
+                /* If this fails, it is ok. Rollback the commit and skip to the next iteration */
                 const newScholarship = await prisma.scholarship.create(
                     {
                         data:{
@@ -55,17 +58,7 @@ export const scholarshipsSync = async () => {
                     }
                 )
 
-                /* Insert into SOAP */
-                const { response } = await soapRequest(
-                    {
-                        url: setScholarshipREST.url,
-                        headers: setScholarshipREST.headers,
-                        xml: util.format(setScholarshipREST.body, scholarship.user_id_scholarship_php[0],
-                            scholarship.scholarship_id_php[0], scholarship.user_id_scholarship_rest[0],
-                            newScholarship.scholarship_id)
-                    }
-                )
-
+                await soapSync(scholarship, newScholarship)
 
                 const { body } = response
 
@@ -75,15 +68,35 @@ export const scholarshipsSync = async () => {
                 parsedBody["S:Envelope"]["S:Body"][0][
                     "ns2:setRESTscholarshipIDResponse"
                 ][0]["return"]
-
-                console.log(result[0])
             }
         }
 
-        console.log("Scholarship Sync Success");
+        console.log("🟢[SCHOLARSHIP] Scholarship Sync Success");
 
     }catch (error: any){
-        console.error(error)
-        console.error("Failed to Synchronize Scholarships");
+        console.error("🛑[SCHOLARSHIP]Failed to Synchronize Scholarships");
     }
+}
+
+const soapSync = async (scholarship: any, newScholarship: any) => {
+     /* Insert into SOAP */
+     const { response } = await soapRequest(
+        {
+            url: setScholarshipREST.url,
+            headers: setScholarshipREST.headers,
+            xml: util.format(setScholarshipREST.body, scholarship.user_id_scholarship_php[0],
+                scholarship.scholarship_id_php[0], scholarship.user_id_scholarship_rest[0],
+                newScholarship.scholarship_id)
+        }
+    )
+
+    /* If scholarship already has acceptance, update the scholarship_id_rest in SOAP */
+    const { res } = await soapRequest(
+        {
+            url: setAcceptanceScholarshipIDREST.url,
+            headers: setAcceptanceScholarshipIDREST.headers,
+            xml: util.format(setAcceptanceScholarshipIDREST.body, scholarship.user_id_scholarship_php[0],
+                scholarship.scholarship_id_php[0], newScholarship.scholarship_id)
+        }
+    )
 }
