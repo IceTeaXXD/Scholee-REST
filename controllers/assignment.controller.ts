@@ -38,6 +38,39 @@ export const getAssignment = async (req: Request, res: Response) => {
     }
 }
 
+export const getAssignmentAll = async (req: Request, res: Response) => {
+    try {
+        const assignments = await prisma.assignment.findMany({
+            include: {
+                scholarship: true
+            }
+        })
+
+        if (!assignments) {
+            throw new Error("Assignment Not Found!")
+        }
+
+        res.status(200).json({
+            status: "success",
+            message: "Assignment retrieved successfully",
+            data: assignments.map((assignment) => {
+                return{
+                    assignment_id: assignment.assignment_id,
+                    scholarship_id: assignment.scholarship_id,
+                    assignment_name: assignment.name,
+                    assignment_description: assignment.desc,
+                    scholarship_name: assignment.scholarship.title
+                }
+            })
+        })
+    } catch (error: any) {
+        res.status(400).json({
+            status: "error",
+            message: error.message
+        })
+    }
+}
+
 export const createAssignment = async (req: Request, res: Response) => {
     try {
         const { organization_id, scholarship_id, name, description } = req.body

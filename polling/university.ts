@@ -51,7 +51,8 @@ export const universitySync = async () => {
                 const parsedBody = await parser.parseStringPromise(body)
             }
         }
+        console.log("🟢[UNIVERSITY] University sync successful")
     } catch (error) {
-        console.error("🛑 [UNIVERSITY] Error making SOAP request")
+        console.error("🛑[UNIVERSITY] Error making SOAP request")
     }
 }
