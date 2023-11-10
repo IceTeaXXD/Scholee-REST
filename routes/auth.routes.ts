@@ -1,9 +1,9 @@
 import express from "express"
 import {
-    handleGetRoles,
-    handleLogin,
-    handleLogout,
-    handleRefreshToken
+  handleLogin,
+  handleLogout,
+  handleRefreshToken,
+  handleGetInfo
 } from "../controllers/auth.controller"
 
 const router = express.Router()
@@ -11,5 +11,5 @@ const router = express.Router()
 router.post("/login", handleLogin)
 router.post("/logout", handleLogout)
 router.get("/refresh", handleRefreshToken)
-router.get("/roles", handleGetRoles)
+router.get("/info", handleGetInfo)
 module.exports = router
