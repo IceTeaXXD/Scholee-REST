@@ -2,10 +2,7 @@ import { Request, Response } from "express"
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { verify, sign } from "jsonwebtoken"
-import { access } from "fs"
-import { serialize } from "cookie"
-import Cookies from "js-cookie"
+import { verify, sign, TokenExpiredError, JsonWebTokenError } from "jsonwebtoken"
 
 const prismaClient = new PrismaClient()
 
@@ -51,7 +48,7 @@ export const handleLogin = async (
                         }
                     },
                     accessTokenSecret,
-                    { expiresIn: "10m" }
+                    { expiresIn: "1m" }
                 )
                 const refreshToken = jwt.sign(
                     { email: email, userType: userType },
@@ -75,6 +72,9 @@ export const handleLogin = async (
                     sameSite: "none",
                     maxAge: 24 * 60 * 60 * 1000
                 })
+                res.cookie("accToken", accessToken, {
+                    maxAge: 1 * 60 * 1000
+                })
                 res.json({ userType, accessToken })
             } else {
                 res.sendStatus(401)
@@ -86,6 +86,34 @@ export const handleLogin = async (
     }
 }
 
+export const handleGetRoles = async (req: Request, res: Response): Promise<void> => {
+    const accessToken = req.cookies.accToken;
+
+    if (!accessToken) {
+      res.status(401).json({ message: 'Access token missing' });
+      return;
+    }
+  
+    try {
+      const decoded = jwt.verify(
+        accessToken,
+        process.env.ACCESS_TOKEN_SECRET as string
+      ) as any;
+  
+      const roles = decoded.UserInfo.roles;
+      res.json({ roles });
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        res.status(401).json({ message: 'Access token expired' });
+      } else if (error instanceof JsonWebTokenError) {
+        console.error('JWT Error:', error.message);
+        res.status(403).json({ message: 'Invalid token' });
+      } else {
+        console.error('Unknown error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }  
+};
 export const handleLogout = async (
     req: Request,
     res: Response
@@ -136,30 +164,28 @@ export const handleLogout = async (
         await prismaClient.$disconnect()
     }
 }
-
 export const handleRefreshToken = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    const cookies = req.cookies
-
+    const cookies = req.cookies;
+    console.log(cookies)
     if (!cookies?.jwt) {
-        res.sendStatus(401)
-        return
+        res.sendStatus(401);
+        return;
     }
 
-    const refreshToken: string = cookies.jwt
-
+    const refreshToken: string = cookies.jwt;
     try {
         const findUser = await prismaClient.user.findFirst({
             where: {
                 refreshToken: refreshToken
             }
-        })
+        });
 
         if (!findUser) {
-            res.sendStatus(403)
-            return
+            res.sendStatus(403);
+            return;
         }
 
         verify(
@@ -172,23 +198,28 @@ export const handleRefreshToken = async (
                 }
                 const email = findUser.email
                 const roles = findUser.role
-                const accessToken: string = sign(
+                const accessTokenSecret: string = String(
+                    process.env.ACCESS_TOKEN_SECRET
+                )
+                const accessToken: string = jwt.sign(
                     {
                         UserInfo: {
                             email: decoded.email,
                             roles
                         }
                     },
-                    process.env.ACCESS_TOKEN_SECRET as string,
-                    { expiresIn: "10m" }
+                    accessTokenSecret,
+                    { expiresIn: "1m" }
                 )
-
-                res.json({ email, roles, accessToken })
+                res.cookie("accToken", accessToken, {
+                    maxAge: 1*60*1000
+                })
+                res.json({ email, roles, accessToken });
             }
-        )
+        );
     } catch (error) {
-        console.error(error)
-        res.sendStatus(500)
-        return
+        console.error(error);
+        res.sendStatus(500);
+        return;
     }
-}
+};
