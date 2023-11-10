@@ -6,6 +6,21 @@ import { verify, sign, TokenExpiredError, JsonWebTokenError } from "jsonwebtoken
 
 const prismaClient = new PrismaClient()
 
+const generateAccessToken = (email: string, roles: string, accessTokenSecret: string): string => {
+    const accessToken: string = jwt.sign(
+      {
+        UserInfo: {
+          email,
+          roles
+        }
+      },
+      accessTokenSecret,
+      { expiresIn: "1m" }
+    );
+  
+    return accessToken;
+  };
+
 export const handleLogin = async (
     req: Request,
     res: Response
@@ -37,19 +52,15 @@ export const handleLogin = async (
             )
             if (match) {
                 const userType = findUser.university
-                    ? "university"
-                    : "organization"
-
-                const accessToken = jwt.sign(
-                    {
-                        UserInfo: {
-                            email: findUser.email,
-                            userType: userType
-                        }
-                    },
-                    accessTokenSecret,
-                    { expiresIn: "1m" }
-                )
+                ? "university"
+                : "organization"
+                
+                console.log("usertype",userType)
+                console.log(findUser.email, userType)
+                const accessToken = generateAccessToken(findUser.email, userType, accessTokenSecret);
+                res.cookie("accToken", accessToken, {
+                    maxAge: 1*60*1000
+                })                
                 const refreshToken = jwt.sign(
                     { email: email, userType: userType },
                     refreshTokenSecret,
@@ -72,10 +83,8 @@ export const handleLogin = async (
                     sameSite: "none",
                     maxAge: 24 * 60 * 60 * 1000
                 })
-                res.cookie("accToken", accessToken, {
-                    maxAge: 1 * 60 * 1000
-                })
-                res.json({ userType, accessToken })
+                console.log("accessToken", accessToken);
+                res.json({ email, userType, accessToken })
             } else {
                 res.sendStatus(401)
             }
@@ -90,28 +99,30 @@ export const handleGetRoles = async (req: Request, res: Response): Promise<void>
     const accessToken = req.cookies.accToken;
 
     if (!accessToken) {
-      res.status(401).json({ message: 'Access token missing' });
-      return;
+        res.status(401).json({ message: 'Access token missing' });
+        return;
     }
   
     try {
-      const decoded = jwt.verify(
-        accessToken,
-        process.env.ACCESS_TOKEN_SECRET as string
-      ) as any;
-  
-      const roles = decoded.UserInfo.roles;
-      res.json({ roles });
+        console.log("handle roles", accessToken)
+        const decoded = jwt.verify(
+            accessToken,
+            process.env.ACCESS_TOKEN_SECRET as string
+        ) as any;
+    
+        const roles = decoded.UserInfo.roles;
+        console.log("roles",roles)
+        res.json({ roles });
     } catch (error) {
-      if (error instanceof TokenExpiredError) {
-        res.status(401).json({ message: 'Access token expired' });
-      } else if (error instanceof JsonWebTokenError) {
-        console.error('JWT Error:', error.message);
-        res.status(403).json({ message: 'Invalid token' });
-      } else {
-        console.error('Unknown error:', error);
-        res.status(500).json({ message: 'Internal server error' });
-      }
+        if (error instanceof TokenExpiredError) {
+            res.status(401).json({ message: 'Access token expired' });
+        } else if (error instanceof JsonWebTokenError) {
+            console.error('JWT Error:', error.message);
+            res.status(403).json({ message: 'Invalid token' });
+        } else {
+            console.error('Unknown error:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
     }  
 };
 export const handleLogout = async (
@@ -201,16 +212,7 @@ export const handleRefreshToken = async (
                 const accessTokenSecret: string = String(
                     process.env.ACCESS_TOKEN_SECRET
                 )
-                const accessToken: string = jwt.sign(
-                    {
-                        UserInfo: {
-                            email: decoded.email,
-                            roles
-                        }
-                    },
-                    accessTokenSecret,
-                    { expiresIn: "1m" }
-                )
+                const accessToken = generateAccessToken(decoded.email, roles, accessTokenSecret);
                 res.cookie("accToken", accessToken, {
                     maxAge: 1*60*1000
                 })
