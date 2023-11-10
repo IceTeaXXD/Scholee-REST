@@ -75,15 +75,12 @@ export const scholarshipsSync = async () => {
                 parsedBody["S:Envelope"]["S:Body"][0][
                     "ns2:setRESTscholarshipIDResponse"
                 ][0]["return"]
-
-                console.log(result[0])
             }
         }
 
-        console.log("Scholarship Sync Success");
+        console.log("🟢[SCHOLARSHIP] Scholarship Sync Success");
 
     }catch (error: any){
-        console.error(error)
-        console.error("Failed to Synchronize Scholarships");
+        console.error("🛑[SCHOLARSHIP]Failed to Synchronize Scholarships");
     }
 }
