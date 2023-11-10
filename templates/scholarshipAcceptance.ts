@@ -20,8 +20,25 @@ const setAcceptanceTemplate = `
 </Envelope>
 `
 
+const setScholarshipIDRESTTemplate = `
+<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <setScholarshipIDREST xmlns="http://services.soap.orden.com/">
+            <user_id_scholarship_php xmlns="">%d</user_id_scholarship_php>
+            <scholarship_id_php xmlns="">%d</scholarship_id_php>
+            <scholarship_id_rest xmlns="">%d</scholarship_id_rest>
+        </setScholarshipIDREST>
+    </Body>
+</Envelope>`;
+
 export const setAcceptance = {
     url,
     headers,
     body: setAcceptanceTemplate
+}
+
+export const setAcceptanceScholarshipIDREST = {
+    url,
+    headers,
+    body: setScholarshipIDRESTTemplate
 }
