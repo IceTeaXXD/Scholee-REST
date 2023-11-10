@@ -4,7 +4,8 @@ import {
     getScholarships,
     getScholarship,
     updateScholarship,
-    deleteScholarship
+    deleteScholarship,
+    getAllScholarshipTypes
 } from "../controllers/scholarship.controller"
 
 // import {
@@ -17,6 +18,7 @@ router.get("/scholarship", getScholarships)
 router.get("/scholarship/:id", getScholarship)
 router.patch("/scholarship/:id", updateScholarship)
 router.delete("/scholarship/:id", deleteScholarship)
+router.get("/scholarshiptype", getAllScholarshipTypes)
 // router.get("/scholarsip/:sid/assignment/:aid", getAssignment);
 // router.post("/scholarsip/:sid/assignment", getAssignment);
 
