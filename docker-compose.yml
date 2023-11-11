@@ -17,9 +17,7 @@ services:
       context: ../rest-service
       dockerfile: Dockerfile
     ports:
-      - 5000:5000
+      - 5001:5001
     restart: always
     depends_on:
       - rest-service-db
-    environment:
-      DATABASE_URL: postgresql://postgres:password@rest-service-db:5432/scholeeadmin

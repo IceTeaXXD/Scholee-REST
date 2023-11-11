@@ -16,30 +16,28 @@ const UniversityRoute = require("./routes/university.routes")
 const AssignmentRoute = require("./routes/assignment.routes")
 const authRoute = require("./routes/auth.routes")
 const soapRoute = require("./routes/soap.routes")
+const fileRoute = require("./routes/files.routes")
 
-app.use(cors({
-    origin: 'http://localhost:3000', 
-    credentials: true,
-}));
-app.use(cookies());
-// app.use(function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     next();
-// });
-app.use(express.static("static"));
-app.use(express.json());
-app.use("/", defaultroute);
-app.use("/api", authRoute);
-app.use("/api", soapRoute);
-app.use(verifyJWT);
-// app.use("/api", soapRoute);
+app.use(
+  cors({
+    origin: process.env.SPA_URL,
+    credentials: true
+  })
+)
+app.use(cookies())
+app.use(express.static("static"))
+app.use(express.json())
+app.use("/", defaultroute)
+app.use("/api", authRoute)
+app.use("/api", soapRoute)
+app.use(verifyJWT)
 app.use("/api", UniversityRoute)
 app.use("/api", ScholarshipRoute)
 app.use("/api", OrganizationRoute)
 app.use("/api", AssignmentRoute)
+app.use("/api", fileRoute)
 
 app.listen(PORT, () => {
-    console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
-    sync()
+  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
+  sync()
 })

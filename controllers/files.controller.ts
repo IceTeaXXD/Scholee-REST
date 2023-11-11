@@ -44,11 +44,11 @@ export const getFileById = async (req: Request, res: Response) => {
 /* URL: /scholarship/:sid/assignment/:aid/file */
 export const getAllFiles = async (req: Request, res: Response) => {
     try {
-        const { sid, fid } = req.params
+        const { sid, aid } = req.params
         const files = await prisma.files.findUnique({
             where: {
                 scholarship_id: Number(sid),
-                file_id: Number(fid)
+                file_id: Number(aid)
             },
             select: {
                 file_path: true,

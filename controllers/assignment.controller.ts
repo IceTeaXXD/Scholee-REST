@@ -14,9 +14,8 @@ export const getAssignment = async (req: Request, res: Response) => {
                 assignment_id: Number(aid),
                 scholarship_id: Number(sid)
             },
-            select: {
-                desc: true,
-                name: true
+            include: {
+                scholarship: true
             }
         })
 
@@ -41,9 +40,13 @@ export const getAssignment = async (req: Request, res: Response) => {
     }
 }
 
-export const getAssignmentAll = async (req: Request, res: Response) => {
+export const getAssignmentBySid= async (req: Request, res: Response) => {
     try {
+        const { sid } = req.params
         const assignments = await prisma.assignment.findMany({
+            where: {
+                scholarship_id: Number(sid)
+            },
             include: {
                 scholarship: true
             }

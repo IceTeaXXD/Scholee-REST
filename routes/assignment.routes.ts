@@ -4,6 +4,7 @@ import {
     getAssignment,
     getAssignmentAll,
     uploadFile
+    getAssignmentBySid
 } from "../controllers/assignment.controller"
 import multer from 'multer';
 
@@ -29,5 +30,6 @@ router.post("/assignment/upload", upload.any(), async(req : any,res : any) => {
         res.send(error.message);
     }
 })
+router.get("/assignment/:sid", getAssignmentBySid)
 
 module.exports = router
