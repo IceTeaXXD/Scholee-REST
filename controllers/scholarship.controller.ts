@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
-
+import jwt from "jsonwebtoken"
 const prisma = new PrismaClient()
 
 export const createScholarship = async (req: Request, res: Response) => {
@@ -83,12 +83,22 @@ export const getScholarships = async (req: Request, res: Response) => {
       minCoverage,
       maxCoverage,
       types,
-      page,
       itemsPerPage,
       currentPage
     } = req.query
-    console.log(req.query)
 
+    const accessToken = req.cookies.accToken
+
+    if (!accessToken) {
+      res.status(401).json({ message: "Access token missing" })
+      return
+    }
+
+    const decoded = jwt.verify(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET as string
+    ) as any
+    const user_id = decoded.UserInfo.user_id
     const whereCondition: Prisma.ScholarshipWhereInput = {
       title: title
         ? { contains: String(title), mode: "insensitive" }
@@ -107,7 +117,8 @@ export const getScholarships = async (req: Request, res: Response) => {
         some: {
           type: types ? { in: String(types).split(",") } : undefined
         }
-      }
+      },
+      organization_id: user_id ? { equals: Number(user_id) } : undefined
     }
 
     const scholarships = await prisma.scholarship.findMany({
@@ -126,8 +137,6 @@ export const getScholarships = async (req: Request, res: Response) => {
     const numberOfPages = Math.ceil(
       totalScholarships / (Number(itemsPerPage) || 100)
     )
-
-    console.log(scholarships.length)
 
     res.status(200).json({
       status: "success",
