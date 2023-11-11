@@ -16,7 +16,7 @@ const UniversityRoute = require("./routes/university.routes")
 const AssignmentRoute = require("./routes/assignment.routes")
 const authRoute = require("./routes/auth.routes")
 const soapRoute = require("./routes/soap.routes")
-const filesRoute = require("./routes/files.routes")
+const fileRoute = require("./routes/files.routes")
 
 app.use(
   cors({
@@ -35,7 +35,7 @@ app.use("/api", UniversityRoute)
 app.use("/api", ScholarshipRoute)
 app.use("/api", OrganizationRoute)
 app.use("/api", AssignmentRoute)
-app.use("/api", filesRoute)
+app.use("/api", fileRoute)
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
