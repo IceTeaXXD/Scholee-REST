@@ -5,7 +5,7 @@ const url = process.env.SOAP_URL + "/ws/UniversityService?wsdl"
 
 const headers = {
     "Content-Type": "text/xml;charset=UTF-8",
-    "API-Key": process.env.SOAP_API_KEY
+    "X-API-KEY": process.env.SOAP_API_KEY
 }
 
 const getAllUniversitiesTemplate = `
