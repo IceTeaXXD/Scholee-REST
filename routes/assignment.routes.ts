@@ -2,8 +2,7 @@ import express from "express"
 import {
     createAssignment,
     getAssignment,
-    getAssignmentAll,
-    uploadFile
+    uploadFile,
     getAssignmentBySid
 } from "../controllers/assignment.controller"
 import multer from 'multer';
@@ -14,7 +13,7 @@ const upload = multer()
 
 router.post("/assignment/create", createAssignment)
 router.get("/assignment/:sid/:aid", getAssignment)
-router.get("/assignment", getAssignmentAll)
+router.get("/assignment/:sid", getAssignmentBySid)
 router.post("/assignment/upload", upload.any(), async(req : any,res : any) => {
     try {
         console.log(req.body);
