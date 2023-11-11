@@ -1,5 +1,8 @@
 import { Prisma, PrismaClient, Role } from "@prisma/client"
 import { Request, Response } from "express"
+import stream, { Readable } from "stream"
+import {google, drive_v3} from 'googleapis'
+import path from "path"
 
 const prisma = new PrismaClient()
 
@@ -102,3 +105,27 @@ export const createAssignment = async (req: Request, res: Response) => {
         })
     }
 }
+const KEYFILEPATH = path.join(__dirname, '..', 'cred.json')
+const SCOPES = ["https://www.googleapis.com/auth/drive"]
+
+const auth = new google.auth.GoogleAuth({
+    keyFile: KEYFILEPATH,
+    scopes: SCOPES,
+});
+
+export const uploadFile = async (fileObject : any) => {
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(fileObject.buffer);
+    const { data } = await google.drive({ version: "v3", auth }).files.create({
+        media: {
+            mimeType: fileObject.mimeType,
+            body: bufferStream,
+        },
+        requestBody: {
+            name: fileObject.originalname,
+            parents: ["16MsCQmIcu4LibyJYMyNeBRXDrRYCs29u"],
+        },
+        fields: "id,name",
+    });
+    console.log(`Uploaded file ${data.name} ${data.id}`);
+};
