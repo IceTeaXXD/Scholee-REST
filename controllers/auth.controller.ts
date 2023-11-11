@@ -12,6 +12,7 @@ import {
 const prismaClient = new PrismaClient()
 
 const generateAccessToken = (
+  user_id: number,
   name: string,
   email: string,
   roles: string,
@@ -20,6 +21,7 @@ const generateAccessToken = (
   const accessToken: string = jwt.sign(
     {
       UserInfo: {
+        user_id,
         name,
         email,
         roles
@@ -61,11 +63,8 @@ export const handleLogin = async (
       )
       if (match) {
         const userType = findUser.university ? "university" : "organization"
-
-        console.log("usertype", userType)
-        console.log(findUser.email, userType)
-        console.log("Name: ", findUser.name)
         const accessToken = generateAccessToken(
+          findUser.user_id,
           findUser.name,
           findUser.email,
           userType,
@@ -75,7 +74,7 @@ export const handleLogin = async (
           maxAge: 1 * 60 * 1000
         })
         const refreshToken = jwt.sign(
-          { email: email, userType: userType },
+          { user_id: findUser.user_id, email: email, userType: userType },
           refreshTokenSecret,
           { expiresIn: "1d" }
         )
@@ -96,8 +95,7 @@ export const handleLogin = async (
           sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000
         })
-        console.log("accessToken", accessToken)
-        res.json({ email, userType, accessToken })
+        res.json({ user_id: findUser.user_id, email, userType, accessToken })
       } else {
         res.sendStatus(401)
       }
@@ -120,16 +118,16 @@ export const handleGetInfo = async (
   }
 
   try {
-    console.log("handle roles", accessToken)
     const decoded = jwt.verify(
       accessToken,
       process.env.ACCESS_TOKEN_SECRET as string
     ) as any
-
-    const email = decoded.UserInfo.email
-    const name = decoded.UserInfo.name
-    const roles = decoded.UserInfo.roles
-    res.json({ email, name, roles })
+    res.json({
+      user_id: decoded.UserInfo.user_id,
+      email: decoded.UserInfo.email,
+      name: decoded.UserInfo.name,
+      roles: decoded.UserInfo.roles
+    })
   } catch (error) {
     if (error instanceof TokenExpiredError) {
       res.status(401).json({ message: "Access token expired" })
@@ -149,14 +147,12 @@ export const handleLogout = async (
 ): Promise<void> => {
   try {
     const cookies = req.cookies
-    console.log("cookies", cookies)
     if (!cookies?.jwt) {
       res.sendStatus(204)
     }
 
     const refreshToken = cookies.jwt
     // Find the user by refreshToken and clear the refreshToken
-    console.log(refreshToken)
     const findUser = await prismaClient.user.findFirst({
       where: {
         refreshToken: refreshToken
@@ -185,6 +181,7 @@ export const handleLogout = async (
       sameSite: "none",
       secure: true
     })
+    res.clearCookie("accToken")
     res.json({ message: "Successfully Logout" })
   } catch (error: any) {
     console.error(error)
@@ -199,7 +196,6 @@ export const handleRefreshToken = async (
   res: Response
 ): Promise<void> => {
   const cookies = req.cookies
-  // console.log(cookies)
   if (!cookies?.jwt) {
     res.sendStatus(401)
     return
@@ -233,6 +229,7 @@ export const handleRefreshToken = async (
           process.env.ACCESS_TOKEN_SECRET
         )
         const accessToken = generateAccessToken(
+          findUser.user_id,
           findUser.name,
           findUser.email,
           roles,
@@ -241,7 +238,7 @@ export const handleRefreshToken = async (
         res.cookie("accToken", accessToken, {
           maxAge: 1 * 60 * 1000
         })
-        res.json({ email, name, roles, accessToken })
+        res.json({ user_id: findUser.user_id, email, name, roles, accessToken })
       }
     )
   } catch (error) {

@@ -13,7 +13,6 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction): void => {
   if (!accessToken) {
     res.sendStatus(401)
   } else {
-    console.log(accessToken)
     jwt.verify(
       accessToken,
       process.env.ACCESS_TOKEN_SECRET as string,
