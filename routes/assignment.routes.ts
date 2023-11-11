@@ -9,7 +9,6 @@ const router = express.Router()
 
 router.post("/assignment/create", createAssignment)
 router.get("/assignment/:sid/:aid", getAssignment)
-router.get("/assignment/:sid", getAssignment)
 
 router.get("/assignment/:sid", getAssignmentBySid)
 
