@@ -30,6 +30,16 @@ const setScholarshipRESTTemplate = `
     </Envelope>
 `
 
+const viewScholarshipCountTemplate = `
+    <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+        <Body>
+            <getScholarshipView xmlns="http://services.soap.orden.com/">
+                <user_id_scholarship_rest xmlns="">%d</user_id_scholarship_rest>
+            </getScholarshipView>
+        </Body>
+    </Envelope>
+`
+
 export const getAllScholarship = {
     url,
     headers,
@@ -40,4 +50,10 @@ export const setScholarshipREST = {
     url,
     headers, 
     body: setScholarshipRESTTemplate
+}
+
+export const viewScholarshipCount = {
+    url,
+    headers,
+    body: viewScholarshipCountTemplate
 }

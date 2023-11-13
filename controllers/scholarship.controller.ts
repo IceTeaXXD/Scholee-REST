@@ -1,7 +1,13 @@
 import { Prisma, PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
+import { viewScholarshipCount } from "../templates/scholarship"
 import jwt from "jsonwebtoken"
+import { it } from "node:test"
+
 const prisma = new PrismaClient()
+const xml2js = require("xml2js")
+const soapRequest = require("easy-soap-request")
+const util = require("util")
 
 export const createScholarship = async (req: Request, res: Response) => {
   try {
@@ -348,6 +354,44 @@ export const deleteScholarship = async (req: Request, res: Response) => {
         type: scholarship.scholarshiptype
       }
     })
+  } catch (error: any) {
+    res.status(500).json({
+      status: "error",
+      message: error.message
+    })
+  }
+}
+
+export const scholarshipCount = async (req: Request, res: Response) => {
+  try{
+    const { id } = req.params
+
+    const { response } = await soapRequest({
+      url: viewScholarshipCount.url,
+      headers: viewScholarshipCount.headers,
+      xml: util.format(viewScholarshipCount.body, id)
+    })
+
+    const { body } = response
+
+    console.log(response)
+        
+    const parser = new xml2js.Parser()
+    const parsedBody = await parser.parseStringPromise(body)
+    const scholarships =
+        parsedBody["S:Envelope"]["S:Body"][0][
+            "ns2:getScholarshipViewResponse"
+        ][0]["return"]
+    
+
+        res.status(200).json({
+          status: "success",
+          message: "Scholarship Count Retrieved",
+          data: {
+            scholarships
+          }
+        })
+
   } catch (error: any) {
     res.status(500).json({
       status: "error",
