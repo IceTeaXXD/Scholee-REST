@@ -20,6 +20,14 @@ const setAcceptanceTemplate = `
 </Envelope>
 `
 
+const getAllScholarshipAcceptanceTemplate = `
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://services.soap.orden.com/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <web:getAllScholarshipAcceptance/>
+    </soapenv:Body>
+</soapenv:Envelope>
+`
 const setScholarshipIDRESTTemplate = `
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
@@ -41,4 +49,10 @@ export const setAcceptanceScholarshipIDREST = {
     scholarshipAccUrl,
     headers,
     body: setScholarshipIDRESTTemplate
+}
+
+export const getAllScholarshipAcceptance = {
+    scholarshipAccUrl,
+    headers,
+    body : getAllScholarshipAcceptanceTemplate
 }
