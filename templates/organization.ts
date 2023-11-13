@@ -3,7 +3,7 @@ dotenv.config()
 
 const headers = {
     "Content-Type": "text/xml;charset=UTF-8",
-    "X-API-KEY": "shortT_Key"
+    "X-API-KEY": process.env.SOAP_API_KEY
 }
 
 const url = process.env.SOAP_URL + "/ws/OrganizationRegistration?wsdl"

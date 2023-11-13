@@ -1,6 +1,13 @@
 import { Prisma, PrismaClient, Role } from "@prisma/client"
 import { Request, Response } from "express"
-import jwt from "jsonwebtoken"
+import { getAllScholarship } from "./soap.controller"
+
+import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken"
+import { getAllScholarships } from "../templates/getAllScholarship"
+import { handleGetInfo } from "./auth.controller"
+const util = require("util")
+const xml2js = require("xml2js")
+const soapRequest = require("easy-soap-request")
 
 const prisma = new PrismaClient()
 
@@ -40,40 +47,81 @@ export const getAssignment = async (req: Request, res: Response) => {
 
 export const getAssignmentBySid = async (req: Request, res: Response) => {
   try {
-    const { sid } = req.params
+    // check for scholarship 
+    const result = await soapRequest({
+      url: getAllScholarships.getAllScholarshipUrl,
+      headers: getAllScholarships.headers,
+      xml: util.format(getAllScholarships.body),
+    });
+
+    const { body } = result.response;
+
+    const parser = new xml2js.Parser();
+    const parsedBody = await parser.parseStringPromise(body);
+    const scholarshipData = parsedBody['S:Envelope']['S:Body'][0]['ns2:getAllScholarshipResponse'][0]['return'];
+
+    // get user id
+    const accessToken = req.cookies.accToken
+
+    if (!accessToken) {
+      res.status(401).json({ message: "Access token missing" })
+      return
+    }
+    const decoded = jwt.verify(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET as string
+    ) as any
+    const userId = decoded.UserInfo.user_id;
+
+    const filteredAssignments = scholarshipData.filter((scholarship : any) => {
+      const user_id_scholarship_rest = scholarship.user_id_scholarship_rest[0];
+      return user_id_scholarship_rest === userId.toString();
+    });
+
+    if (filteredAssignments.length === 0) {
+      res.status(200).json({
+        status: "success",
+        message: "No assignments found for the user",
+        data: [],
+      });
+      return;
+    }
+    const scholarshipIds = filteredAssignments.map((scholarship : any) => scholarship.scholarship_id_rest[0]);
     const assignments = await prisma.assignment.findMany({
       where: {
-        scholarship_id: Number(sid)
+        scholarship_id: {
+          in: scholarshipIds.map(Number),
+        },
       },
       include: {
-        scholarship: true
-      }
-    })
+        scholarship: true,
+      },
+    });
 
     if (!assignments) {
-      throw new Error("Assignment Not Found!")
+      throw new Error("Assignment Not Found!");
     }
 
     res.status(200).json({
       status: "success",
-      message: "Assignment retrieved successfully",
+      message: "Assignments retrieved successfully",
       data: assignments.map((assignment) => {
         return {
           assignment_id: assignment.assignment_id,
           scholarship_id: assignment.scholarship_id,
           assignment_name: assignment.name,
           assignment_description: assignment.desc,
-          scholarship_name: assignment.scholarship.title
-        }
-      })
-    })
+          scholarship_name: assignment.scholarship.title,
+        };
+      }),
+    });
   } catch (error: any) {
     res.status(400).json({
       status: "error",
-      message: error.message
-    })
+      message: error.message,
+    });
   }
-}
+};
 
 export const createAssignment = async (req: Request, res: Response) => {
   try {

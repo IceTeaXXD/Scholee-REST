@@ -6,7 +6,7 @@ const headers = {
     "X-API-KEY": process.env.SOAP_API_KEY
 }
 
-const url = process.env.SOAP_URL + "/ws/ScholarshipAcceptanceService?wsdl"
+const scholarshipAccUrl = process.env.SOAP_URL + "/ws/ScholarshipAcceptanceService?wsdl"
 
 const setAcceptanceTemplate = `
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -32,13 +32,13 @@ const setScholarshipIDRESTTemplate = `
 </Envelope>`;
 
 export const setAcceptance = {
-    url,
+    scholarshipAccUrl,
     headers,
     body: setAcceptanceTemplate
 }
 
 export const setAcceptanceScholarshipIDREST = {
-    url,
+    scholarshipAccUrl,
     headers,
     body: setScholarshipIDRESTTemplate
 }
