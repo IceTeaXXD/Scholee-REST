@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { setAcceptance } from "../templates/scholarshipAcceptance"
+import { setAcceptance, getAllScholarshipAcceptance } from "../templates/scholarshipAcceptance"
 import { getAllScholarships } from "../templates/getAllScholarship"
 
 const soapRequest = require("easy-soap-request")
@@ -46,7 +46,6 @@ export const scholarshipAcceptance = async (req: Request, res: Response) => {
 
 export const getAllScholarship = async(req : Request, res : Response) => {
     try {
-        // make get all scholarship here
         const result = await soapRequest({
             url : getAllScholarships.getAllScholarshipUrl,
             headers: getAllScholarships.headers,
@@ -69,6 +68,34 @@ export const getAllScholarship = async(req : Request, res : Response) => {
             message: message
         })
     } catch (error: any) {
+        console.error("SOAP request error:", error)
+        throw error
+    }
+}
+
+export const getScholarshipAcceptance = async(req : Request, res: Response) => {
+    try {
+        const result = await soapRequest({
+            url : getAllScholarshipAcceptance.scholarshipAccUrl,
+            headers : getAllScholarshipAcceptance.headers,
+            xml : util.format(
+                getAllScholarshipAcceptance.body
+            )
+        })
+        const {body} = result.response
+
+        const parser = new xml2js.Parser()
+        const parsedBody = await parser.parseStringPromise(body)
+        const message = 
+            parsedBody["S:Envelope"]["S:Body"][0] [
+                "ns2:setAcceptanceResponse"
+            ] [0]["return"]
+        
+        res.status(200).json({
+            status: "success",
+            message: message
+        })
+    } catch(error : any) {
         console.error("SOAP request error:", error)
         throw error
     }
