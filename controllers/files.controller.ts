@@ -104,7 +104,7 @@ export const uploadFiles = async (req: Request, res: Response) => {
         const savedFile = await prisma.files.create({
             data: {
                 user_id_student: Number(uid),
-                file_path: "/path/to/your/uploaded/file" + file_path,
+                file_path: "/path/to/your/uploaded/file",
                 organization_id: scholarship.organization_id,
                 scholarship_id: scholarship.scholarship_id,
                 assignment_id: assignment.assignment_id
