@@ -13,6 +13,30 @@ const prisma = new PrismaClient()
 
 export const getAssignment = async (req: Request, res: Response) => {
   try {
+    const result = await soapRequest({
+      url: getAllScholarships.getAllScholarshipUrl,
+      headers: getAllScholarships.headers,
+      xml: util.format(getAllScholarships.body),
+    });
+
+    const { body } = result.response;
+
+    const parser = new xml2js.Parser();
+    const parsedBody = await parser.parseStringPromise(body);
+    const scholarshipData = parsedBody['S:Envelope']['S:Body'][0]['ns2:getAllScholarshipResponse'][0]['return'];
+
+    const accessToken = req.cookies.accToken;
+
+    const decoded = jwt.verify(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET as string
+    ) as any;
+    const userId = decoded.UserInfo?.user_id as string | undefined;
+    const filteredAssignments = scholarshipData.filter((scholarship: any) => {
+      const user_id_scholarship = scholarship['user_id_scholarship_rest']?.[0];
+      return user_id_scholarship === (userId as any).toString();
+    });
+    
     const { sid, aid } = req.params
     const assignment = await prisma.assignment.findUnique({
       where: {
@@ -27,16 +51,21 @@ export const getAssignment = async (req: Request, res: Response) => {
     if (!assignment) {
       throw new Error("Assignment Not Found!")
     }
-
+    const filteredAssignmentIds = filteredAssignments.map(
+      (filtered : any) => parseInt(filtered.scholarship_id_rest[0], 10)
+    );
+    
     res.status(200).json({
       status: "success",
       message: "Assignment retrieved successfully",
-      data: {
-        assignment_id: aid,
-        assignment_name: assignment.name,
-        assignment_description: assignment.desc
-      }
-    })
+      data: filteredAssignmentIds.includes(assignment.scholarship.scholarship_id)
+        ? {
+            assignment_id: assignment.assignment_id,
+            assignment_name: assignment.name,
+            assignment_description: assignment.desc,
+          }
+        : null,
+    });       
   } catch (error: any) {
     res.status(400).json({
       status: "error",
@@ -60,23 +89,37 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
     const parsedBody = await parser.parseStringPromise(body);
     const scholarshipData = parsedBody['S:Envelope']['S:Body'][0]['ns2:getAllScholarshipResponse'][0]['return'];
 
-    // get user id
-    const accessToken = req.cookies.accToken
+    let userId: string | undefined;
+    const accessToken = req.cookies.accToken;
 
     if (!accessToken) {
-      res.status(401).json({ message: "Access token missing" })
-      return
+      // Get userId from headers
+      userId = req.headers['user_id'] as string | undefined;
+    } else {
+      // Get userId from decoded token
+      const decoded = jwt.verify(
+        accessToken,
+        process.env.ACCESS_TOKEN_SECRET as string
+      ) as any;
+      userId = decoded.UserInfo?.user_id as string | undefined;
     }
-    const decoded = jwt.verify(
-      accessToken,
-      process.env.ACCESS_TOKEN_SECRET as string
-    ) as any
-    const userId = decoded.UserInfo.user_id;
 
-    const filteredAssignments = scholarshipData.filter((scholarship : any) => {
-      const user_id_scholarship_rest = scholarship.user_id_scholarship_rest[0];
-      return user_id_scholarship_rest === userId.toString();
-    });
+    // Check if userId is not null or undefined
+    if (!userId) {
+      res.status(400).json({
+        status: "error",
+        message: "User ID is missing in headers",
+      });
+      return;
+    }
+
+    const userField =
+      !accessToken ? 'user_id_scholarship_php' : 'user_id_scholarship_rest';
+
+    const filteredAssignments = scholarshipData.filter((scholarship: any) => {
+      const user_id_scholarship = scholarship[userField]?.[0];
+      return user_id_scholarship === (userId as string).toString();
+    });      
 
     if (filteredAssignments.length === 0) {
       res.status(200).json({
@@ -86,7 +129,11 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
       });
       return;
     }
-    const scholarshipIds = filteredAssignments.map((scholarship : any) => scholarship.scholarship_id_rest[0]);
+
+    const scholarshipIds = filteredAssignments.map(
+      (scholarship: any) => scholarship.scholarship_id_rest[0]
+    );
+
     const assignments = await prisma.assignment.findMany({
       where: {
         scholarship_id: {
@@ -122,6 +169,7 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 export const createAssignment = async (req: Request, res: Response) => {
   try {

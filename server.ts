@@ -17,10 +17,12 @@ const AssignmentRoute = require("./routes/assignment.routes")
 const authRoute = require("./routes/auth.routes")
 const soapRoute = require("./routes/soap.routes")
 const fileRoute = require("./routes/files.routes")
+// const publicFile = require("./routes/filesPublic.routes")
+const publicAssignment = require("./routes/assignmentPublic.routes")
 
 app.use(
   cors({
-    origin: process.env.SPA_URL,
+    origin: [process.env.SPA_URL as any, process.env.MONOLITH_URL as any],
     credentials: true
   })
 )
@@ -30,6 +32,8 @@ app.use(express.json())
 app.use("/", defaultroute)
 app.use("/api", authRoute)
 app.use("/api", soapRoute)
+// app.use("/api", publicFile)
+app.use("/api", publicAssignment)
 app.use(verifyJWT)
 app.use("/api", UniversityRoute)
 app.use("/api", ScholarshipRoute)
