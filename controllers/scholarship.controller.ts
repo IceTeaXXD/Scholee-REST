@@ -105,6 +105,9 @@ export const getScholarships = async (req: Request, res: Response) => {
       process.env.ACCESS_TOKEN_SECRET as string
     ) as any
     const user_id = decoded.UserInfo.user_id
+
+    const scholarship_count = await scholarshipCount(user_id)
+
     const whereCondition: Prisma.ScholarshipWhereInput = {
       title: title
         ? { contains: String(title), mode: "insensitive" }
@@ -119,11 +122,11 @@ export const getScholarships = async (req: Request, res: Response) => {
             ? Number(maxCoverage)
             : undefined
       },
-      scholarshiptype: {
-        some: {
-          type: types ? { in: String(types).split(",") } : undefined
-        }
-      },
+      // scholarshiptype: {
+      //   some: {
+      //     type: types ? { in: String(types).split(",") } : undefined
+      //   }
+      // },
       organization_id: user_id ? { equals: Number(user_id) } : undefined
     }
 
@@ -149,6 +152,10 @@ export const getScholarships = async (req: Request, res: Response) => {
       message: "Scholarships retrieved successfully",
       numberOfPages,
       data: scholarships.map((scholarship) => {
+        const countObject = scholarship_count.find(
+          (count: any) => count.scholarship_id_rest[0] == scholarship.scholarship_id
+        );
+        
         return {
           organization_id: scholarship.organization_id,
           scholarship_id: scholarship.scholarship_id,
@@ -158,7 +165,8 @@ export const getScholarships = async (req: Request, res: Response) => {
           coverage: scholarship.coverage,
           contact_name: scholarship.contact_name,
           contact_email: scholarship.contact_email,
-          type: scholarship.scholarshiptype
+          type: scholarship.scholarshiptype,
+          count: countObject ? countObject.view_count[0] : 0
         }
       })
     })
@@ -362,40 +370,21 @@ export const deleteScholarship = async (req: Request, res: Response) => {
   }
 }
 
-export const scholarshipCount = async (req: Request, res: Response) => {
-  try{
-    const { id } = req.params
+export const scholarshipCount = async (id: Number) => {
+  const { response } = await soapRequest({
+    url: viewScholarshipCount.url,
+    headers: viewScholarshipCount.headers,
+    xml: util.format(viewScholarshipCount.body, id)
+  })
 
-    const { response } = await soapRequest({
-      url: viewScholarshipCount.url,
-      headers: viewScholarshipCount.headers,
-      xml: util.format(viewScholarshipCount.body, id)
-    })
+  const { body } = response
+      
+  const parser = new xml2js.Parser()
+  const parsedBody = await parser.parseStringPromise(body)
+  const scholarships =
+      parsedBody["S:Envelope"]["S:Body"][0][
+          "ns2:getScholarshipViewResponse"
+      ][0]["return"]
 
-    const { body } = response
-
-    console.log(response)
-        
-    const parser = new xml2js.Parser()
-    const parsedBody = await parser.parseStringPromise(body)
-    const scholarships =
-        parsedBody["S:Envelope"]["S:Body"][0][
-            "ns2:getScholarshipViewResponse"
-        ][0]["return"]
-    
-
-        res.status(200).json({
-          status: "success",
-          message: "Scholarship Count Retrieved",
-          data: {
-            scholarships
-          }
-        })
-
-  } catch (error: any) {
-    res.status(500).json({
-      status: "error",
-      message: error.message
-    })
-  }
+  return scholarships
 }
