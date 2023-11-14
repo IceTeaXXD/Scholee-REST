@@ -345,6 +345,61 @@ async function getAssignmentByIdAndScholarshipId(aid: string, sid: string) {
   })
 }
 
+export const updateAssignment = async (req: Request, res: Response) => {
+  try {
+    const { sid, aid } = req.params
+    const { name, desc } = req.body
+
+    const accessToken = req.cookies.accToken
+    if (!accessToken) {
+      res.status(401).json({ message: "Access token missing" })
+      return
+    }
+
+    const decoded = jwt.verify(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET as string
+    ) as any
+    const organization_id = decoded.UserInfo.user_id
+
+    const assignment = await getAssignmentByIdAndScholarshipId(aid, sid)
+    if (!assignment) {
+      throw new Error("Assignment Not Found!")
+    }
+
+    if (assignment.organization_id !== organization_id) {
+      throw new Error("Unauthorized!")
+    }
+
+    const updatedAssignment = await prisma.assignment.update({
+      where: {
+        assignment_id: Number(aid)
+      },
+      data: {
+        name,
+        desc
+      }
+    })
+
+    res.status(200).json({
+      status: "success",
+      message: "Assignment updated successfully",
+      data: {
+        assignment_id: updatedAssignment.assignment_id,
+        organization_id: updatedAssignment.organization_id,
+        assignment_name: updatedAssignment.name,
+        assignment_description: updatedAssignment.desc,
+        scholarship_id: updatedAssignment.scholarship_id
+      }
+    })
+  } catch (error: any) {
+    res.status(400).json({
+      status: "error",
+      message: error.message
+    })
+  }
+}
+
 export const deleteAssignment = async (req: Request, res: Response) => {
   try {
     const { sid, aid } = req.params
