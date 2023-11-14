@@ -9,20 +9,17 @@ import multer from 'multer';
 const router = express.Router()
 const upload = multer()
 
-router.post("/files/scholarship/:sid/assignment/:aid", upload.any(), async(req : any, res : any) => {
+router.post("/files/scholarship/:sid/assignment/:aid", upload.any(), async (req: any, res: any) => {
     try {
-        console.log(req.body);
-        console.log(req.files);
-        const { body, files } = req;
-
-        for (let f = 0; f < files.length; f += 1) {
-            await uploadFile(files[f]);
-        }
-        uploadFiles;
-        res.status(200).send("Form Submitted");
-    } catch (error : any) {
-        res.send(error.message);
+        const { files } = req;
+        const fileUrls = await Promise.all(
+            files.map(async (file: any) => uploadFile(file))
+        );
+        console.log("links", fileUrls);
+        await uploadFiles(req, res);
+    } catch (error: any) {
+        res.status(500).send(error.message);
     }
-})
+});
 
 module.exports = router
