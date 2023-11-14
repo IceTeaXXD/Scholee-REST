@@ -2,9 +2,13 @@ import { PrismaClient, Role } from "@prisma/client"
 import { Request, Response } from "express"
 import crypro from "crypto"
 import { hash } from "bcrypt"
+import { getAllUniversities } from "../templates/university"
 
 const prisma = new PrismaClient()
 const fetch = require('node-fetch');
+const xml2js = require("xml2js")
+const soapRequest = require("easy-soap-request")
+const util = require("util")
 
 export const createUniversity = async (req: Request, res: Response) => {
     try {
@@ -273,11 +277,32 @@ export const deleteUniversity = async (req: Request, res: Response) => {
 export const getUniversityStats = async (req: Request, res: Response) => {
     const { id } = req.params
 
+    /* Find the PHP ID */
+    const { response } = await soapRequest({
+        url: getAllUniversities.url,
+        headers: getAllUniversities.headers,
+        xml: getAllUniversities.body
+    })
+
+    const { body } = response
+        
+    const parser = new xml2js.Parser()
+    const parsedBody = await parser.parseStringPromise(body)
+    const universities =
+        parsedBody["S:Envelope"]["S:Body"][0][
+            "ns2:getAllUniversitiesResponse"
+        ][0]["return"]
+
+    /* Fetch the phpUniId where restUniId = id */
+    const uniObj = universities.find((univ:any) => univ.restUniId[0] == id)
+
+    const phpId = uniObj ? uniObj.phpUniId[0] : null;
+
     const url = process.env.MONOLITH_URL + "/api/university/stats.php"
     const universityAll = await fetch(url);
     const universityJSON = await universityAll.json()
 
-    const uni = universityJSON.filter((university: any) => university.university_id == id)
+    const uni = universityJSON.filter((university: any) => university.university_id == phpId)
 
     if(uni){
         res.status(200).json(
