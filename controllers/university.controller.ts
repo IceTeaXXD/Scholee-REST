@@ -277,7 +277,7 @@ export const getUniversityStats = async (req: Request, res: Response) => {
     const universityAll = await fetch(url);
     const universityJSON = await universityAll.json()
 
-    const uni = universityJSON.find((university: any) => university.university_id == id)
+    const uni = universityJSON.filter((university: any) => university.university_id == id)
 
     if(uni){
         res.status(200).json(
