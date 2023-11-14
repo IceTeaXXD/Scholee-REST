@@ -158,12 +158,11 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
       const filteredScholarshipAccData = scholarshipAccData.filter(
         (item: any) => {
           return (
-            item.user_id_student[0] === userId &&
-            item.scholarship_id_rest[0] === sid
+            item.user_id_student[0] === (userId as any).toString() &&
+            item.scholarship_id_rest[0] === (sid as any).toString()
           )
         }
       )
-
       if (filteredScholarshipAccData.length === 0) {
         return res.status(200).json({
           status: "success",
@@ -172,8 +171,10 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
         })
       }
 
+      console.log("filteredScholarshipAccData", filteredScholarshipAccData)
+
       const scholarshipIds = filteredScholarshipAccData.map(
-        (item: any) => item.scholarship_id_php[0]
+        (item: any) => item.scholarship_id_rest[0]
       )
       const assignments = await getAssignmentsByScholarshipIds(scholarshipIds)
 
