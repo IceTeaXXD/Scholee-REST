@@ -182,7 +182,7 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
       const filteredAssignments = scholarshipData.filter((scholarship: any) => {
         const user_id_scholarship = scholarship['user_id_scholarship_rest']?.[0];
         const scholarship_id_rest = scholarship['scholarship_id_rest']?.[0];
-        return user_id_scholarship === userId && scholarship_id_rest === sid;
+        return user_id_scholarship === (userId as any).toString() && scholarship_id_rest === (sid as any).toString();
       });
 
       if (filteredAssignments.length === 0) {
