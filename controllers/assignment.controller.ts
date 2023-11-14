@@ -59,7 +59,6 @@ export const getAssignment = async (req: Request, res: Response) => {
             scholarship: true
           }
         })
-        console.log("assignment", assignment)
         res.status(200).json({
           status: "success",
           message: "Assignment retrieved successfully",
@@ -170,8 +169,6 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
           data: []
         })
       }
-
-      console.log("filteredScholarshipAccData", filteredScholarshipAccData)
 
       const scholarshipIds = filteredScholarshipAccData.map(
         (item: any) => item.scholarship_id_rest[0]

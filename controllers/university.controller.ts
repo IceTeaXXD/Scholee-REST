@@ -291,27 +291,28 @@ export const getUniversityStats = async (req: Request, res: Response) => {
     ]
 
   /* Fetch the phpUniId where restUniId = id */
-  if (!universities) {
+  if (!universities || !Array.isArray(universities)) {
     res.status(404).json({ error: "University not found" })
-  }
-  const uniObj = universities.find((univ: any) => univ.restUniId[0] == id)
-
-  const phpId = uniObj ? uniObj.phpUniId[0] : null
-
-  const url = process.env.MONOLITH_URL + "/api/university/stats.php"
-  const universityAll = await fetch(url)
-  const universityJSON = await universityAll.json()
-
-  const uni = universityJSON.filter(
-    (university: any) => university.university_id == phpId
-  )
-
-  if (uni) {
-    res.status(200).json({
-      message: "Success",
-      data: uni
-    })
   } else {
-    res.status(404).json({ error: "University not found" })
+    const uniObj = universities.find((univ: any) => univ.restUniId[0] == id)
+
+    const phpId = uniObj ? uniObj.phpUniId[0] : null
+
+    const url = process.env.MONOLITH_URL + "/api/university/stats.php"
+    const universityAll = await fetch(url)
+    const universityJSON = await universityAll.json()
+
+    const uni = universityJSON.filter(
+      (university: any) => university.university_id == phpId
+    )
+
+    if (uni) {
+      res.status(200).json({
+        message: "Success",
+        data: uni
+      })
+    } else {
+      res.status(404).json({ error: "University not found" })
+    }
   }
 }
