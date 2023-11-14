@@ -4,6 +4,7 @@ import crypro from "crypto"
 import { hash } from "bcrypt"
 
 const prisma = new PrismaClient()
+const fetch = require('node-fetch');
 
 export const createUniversity = async (req: Request, res: Response) => {
     try {
@@ -266,5 +267,26 @@ export const deleteUniversity = async (req: Request, res: Response) => {
             status: "error",
             message: error.message
         })
+    }
+}
+
+export const getUniversityStats = async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const url = process.env.MONOLITH_URL + "/api/university/stats.php"
+    const universityAll = await fetch(url);
+    const universityJSON = await universityAll.json()
+
+    const uni = universityJSON.find((university: any) => university.university_id == id)
+
+    if(uni){
+        res.status(200).json(
+            {
+                message: "Success",
+                data: uni
+            }
+        );
+    }else{
+        res.status(404).json({ error: 'University not found' });
     }
 }
