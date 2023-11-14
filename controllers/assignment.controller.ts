@@ -219,6 +219,8 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
         throw new Error("Assignment Not Found!")
       }
 
+      assignments.sort((a, b) => a.assignment_id - b.assignment_id)
+
       return res.status(200).json({
         status: "success",
         message: "Assignments retrieved successfully",
