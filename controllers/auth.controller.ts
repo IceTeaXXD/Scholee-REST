@@ -28,7 +28,7 @@ const generateAccessToken = (
       }
     },
     accessTokenSecret,
-    { expiresIn: "1m" }
+    { expiresIn: "2m" }
   )
 
   return accessToken
@@ -71,7 +71,7 @@ export const handleLogin = async (
           accessTokenSecret
         )
         res.cookie("accToken", accessToken, {
-          maxAge: 1 * 60 * 1000
+          maxAge: 2 * 60 * 1000
         })
         const refreshToken = jwt.sign(
           { user_id: findUser.user_id, email: email, userType: userType },
@@ -152,7 +152,6 @@ export const handleLogout = async (
     }
 
     const refreshToken = cookies.jwt
-    // Find the user by refreshToken and clear the refreshToken
     const findUser = await prismaClient.user.findFirst({
       where: {
         refreshToken: refreshToken
@@ -236,7 +235,7 @@ export const handleRefreshToken = async (
           accessTokenSecret
         )
         res.cookie("accToken", accessToken, {
-          maxAge: 1 * 60 * 1000
+          maxAge: 2 * 60 * 1000
         })
         res.json({ user_id: findUser.user_id, email, name, roles, accessToken })
       }
