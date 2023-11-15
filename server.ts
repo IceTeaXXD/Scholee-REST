@@ -2,6 +2,7 @@ import verifyJWT from "./middleware/verifyJWT"
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
+import { client } from "./redis"
 import { sync } from "./polling/sync"
 dotenv.config()
 
@@ -51,3 +52,17 @@ app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
   sync()
 })
+
+const start = async () => {
+  try {
+    await client.connect()
+    app.listen(PORT, () => {
+      console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
+      sync()
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+start()

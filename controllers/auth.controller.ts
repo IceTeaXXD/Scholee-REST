@@ -8,8 +8,9 @@ import {
   TokenExpiredError,
   JsonWebTokenError
 } from "jsonwebtoken"
-
 const prismaClient = new PrismaClient()
+import { client } from "../redis"
+import { promisify } from "util"
 
 const generateAccessToken = (
   user_id: number,
@@ -190,10 +191,7 @@ export const handleLogout = async (
   }
 }
 
-export const handleRefreshToken = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const handleRefreshToken = async (req: Request, res: Response) => {
   const cookies = req.cookies
   if (!cookies?.jwt) {
     res.sendStatus(401)
@@ -201,48 +199,144 @@ export const handleRefreshToken = async (
   }
 
   const refreshToken: string = cookies.jwt
+
   try {
-    const findUser = await prismaClient.user.findFirst({
-      where: {
-        refreshToken: refreshToken
-      }
-    })
+    const redisData = await client.get(refreshToken)
 
-    if (!findUser) {
-      res.sendStatus(403)
-      return
-    }
+    console.log("handleRefreshToken")
+    if (redisData) {
+      // Data found in Redis
+      console.log("Data found in Redis")
+      const decoded = JSON.parse(redisData)
+      const { user_id, email, name, roles, accessToken } = decoded
+      res.cookie("accToken", accessToken, {
+        maxAge: 2 * 60 * 1000
+      })
+      res.json({ user_id, email, name, roles, accessToken })
+    } else {
+      // Data not found in Redis
+      console.log("Data not found in Redis")
+      try {
+        const findUser = await prismaClient.user.findFirst({
+          where: {
+            refreshToken: refreshToken
+          }
+        })
 
-    verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET as string,
-      (err, decoded: any) => {
-        if (err || !findUser || findUser.email !== decoded.email) {
+        if (!findUser) {
           res.sendStatus(403)
           return
         }
-        const name = findUser.name
-        const email = findUser.email
-        const roles = findUser.role
-        const accessTokenSecret: string = String(
-          process.env.ACCESS_TOKEN_SECRET
+
+        verify(
+          refreshToken,
+          process.env.REFRESH_TOKEN_SECRET as string,
+          (err, decoded: any) => {
+            if (err || !findUser || findUser.email !== decoded.email) {
+              res.sendStatus(403)
+              return
+            }
+            const name = findUser.name
+            const email = findUser.email
+            const roles = findUser.role
+            const accessTokenSecret: string = String(
+              process.env.ACCESS_TOKEN_SECRET
+            )
+            const accessToken = generateAccessToken(
+              findUser.user_id,
+              findUser.name,
+              findUser.email,
+              roles,
+              accessTokenSecret
+            )
+            // Save the refreshToken in Redis
+            client.set(
+              refreshToken,
+              JSON.stringify({
+                user_id: findUser.user_id,
+                email,
+                name,
+                roles,
+                accessToken
+              })
+            )
+            res.cookie("accToken", accessToken, {
+              maxAge: 2 * 60 * 1000
+            })
+            res.json({
+              user_id: findUser.user_id,
+              email,
+              name,
+              roles,
+              accessToken
+            })
+          }
         )
-        const accessToken = generateAccessToken(
-          findUser.user_id,
-          findUser.name,
-          findUser.email,
-          roles,
-          accessTokenSecret
-        )
-        res.cookie("accToken", accessToken, {
-          maxAge: 2 * 60 * 1000
-        })
-        res.json({ user_id: findUser.user_id, email, name, roles, accessToken })
+      } catch (error) {
+        console.error(error)
+        res.sendStatus(500)
+        return
       }
-    )
-  } catch (error) {
-    console.error(error)
+    }
+  } catch (redisErr) {
+    console.error("Error reading from Redis:", redisErr)
     res.sendStatus(500)
     return
   }
 }
+// export const handleRefreshToken = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   const cookies = req.cookies
+//   if (!cookies?.jwt) {
+//     res.sendStatus(401)
+//     return
+//   }
+
+//   const refreshToken: string = cookies.jwt
+//   try {
+//     const findUser = await prismaClient.user.findFirst({
+//       where: {
+//         refreshToken: refreshToken
+//       }
+//     })
+
+//     if (!findUser) {
+//       res.sendStatus(403)
+//       return
+//     }
+
+//     verify(
+//       refreshToken,
+//       process.env.REFRESH_TOKEN_SECRET as string,
+//       (err, decoded: any) => {
+//         if (err || !findUser || findUser.email !== decoded.email) {
+//           res.sendStatus(403)
+//           return
+//         }
+//         const name = findUser.name
+//         const email = findUser.email
+//         const roles = findUser.role
+//         const accessTokenSecret: string = String(
+//           process.env.ACCESS_TOKEN_SECRET
+//         )
+//         const accessToken = generateAccessToken(
+//           findUser.user_id,
+//           findUser.name,
+//           findUser.email,
+//           roles,
+//           accessTokenSecret
+//         )
+//         res.cookie("accToken", accessToken, {
+//           maxAge: 2 * 60 * 1000
+//         })
+//         res.json({ user_id: findUser.user_id, email, name, roles, accessToken })
+//       }
+//     )
+//   } catch (error) {
+//     console.error(error)
+//     res.sendStatus(500)
+//     return
+//   }
+// }
