@@ -1,6 +1,5 @@
 import express from "express"
 import {
-    createUniversity,
     getUniversities,
     getUniversity,
     updateUniversity,
@@ -12,7 +11,6 @@ const router = express.Router()
 
 router.get("/university", getUniversities)
 router.get("/university/:id", getUniversity)
-router.post("/university", createUniversity)
 router.patch("/university/:id", updateUniversity)
 router.delete("/university/:id", deleteUniversity)
 router.get("/university/stats/:id", getUniversityStats)
