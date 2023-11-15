@@ -20,6 +20,7 @@ const soapRoute = require("./routes/soap.routes")
 const fileRoute = require("./routes/files.routes")
 const publicFile = require("./routes/filesPublic.routes")
 const publicAssignment = require("./routes/assignmentPublic.routes")
+const publicUniversity = require("./routes/universityPublic.routes")
 
 app.use(
   cors({
@@ -36,6 +37,7 @@ app.use("/api", soapRoute)
 app.use("/api", publicFile)
 app.use("/api", publicAssignment)
 app.use("/api", publicOrganization)
+app.use("/api", publicUniversity)
 app.use(verifyJWT)
 app.use("/api", UniversityRoute)
 app.use("/api", ScholarshipRoute)

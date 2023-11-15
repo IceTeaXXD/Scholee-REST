@@ -122,11 +122,11 @@ export const getScholarships = async (req: Request, res: Response) => {
             ? Number(maxCoverage)
             : undefined
       },
-      // scholarshiptype: {
-      //   some: {
-      //     type: types ? { in: String(types).split(",") } : undefined
-      //   }
-      // },
+      scholarshiptype: {
+        some: {
+          type: types ? { in: String(types).split(",") } : undefined
+        }
+      },
       organization_id: user_id ? { equals: Number(user_id) } : undefined
     }
 
