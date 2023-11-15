@@ -14,6 +14,7 @@ const setAcceptanceTemplate = `
         <setAcceptance xmlns="http://services.soap.orden.com/">
             <user_id_student xmlns="">%d</user_id_student>
             <scholarship_id_rest xmlns="">%d</scholarship_id_rest>
+            <scholarship_name xmlns="">%s</scholarship_name>
             <status xmlns="">%s</status>
         </setAcceptance>
     </Body>
