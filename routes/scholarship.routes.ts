@@ -6,12 +6,9 @@ import {
     updateScholarship,
     deleteScholarship,
     getAllScholarshipTypes,
-    scholarshipCount
+    scholarshipCount,
+    scholarshipAcceptance
 } from "../controllers/scholarship.controller"
-
-// import {
-//     getAssignment,
-// } from "../controllers/assignment.controller";
 
 const router = express.Router()
 router.post("/scholarship", createScholarship)
@@ -21,7 +18,6 @@ router.patch("/scholarship/:id", updateScholarship)
 router.delete("/scholarship/:id", deleteScholarship)
 router.get("/scholarshiptype", getAllScholarshipTypes)
 router.get("/scholarship/:id/count", scholarshipCount)
-// router.get("/scholarsip/:sid/assignment/:aid", getAssignment);
-// router.post("/scholarsip/:sid/assignment", getAssignment);
+router.post("/scholarship/:sid/accept", scholarshipAcceptance)
 
 module.exports = router

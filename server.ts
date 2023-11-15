@@ -48,11 +48,6 @@ app.use("/api", OrganizationRoute)
 app.use("/api", AssignmentRoute)
 app.use("/api", fileRoute)
 
-app.listen(PORT, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
-  sync()
-})
-
 const start = async () => {
   try {
     await client.connect()

@@ -2,8 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { viewScholarshipCount } from "../templates/scholarship"
 import jwt from "jsonwebtoken"
-import { it } from "node:test"
-
+import { setAcceptance } from "../templates/scholarshipAcceptance"
 const prisma = new PrismaClient()
 const xml2js = require("xml2js")
 const soapRequest = require("easy-soap-request")
@@ -387,4 +386,69 @@ export const scholarshipCount = async (id: Number) => {
       ][0]["return"]
 
   return scholarships
+}
+export const scholarshipAcceptance = async (req: Request, res: Response) => {
+  try {
+    const { sid } = req.params
+    const { status, user_id } = req.body
+
+    const accessToken = req.cookies.accToken
+
+    if (!accessToken) {
+      res.status(401).json({ message: "Access token missing" })
+      return
+    }
+
+    const scholarship = await prisma.scholarship.findUnique({
+      where: {
+        scholarship_id: Number(sid)
+      },
+      include: {
+        scholarshiptype: true,
+        organization: true
+      }
+    })
+
+    if (!scholarship) {
+      throw new Error("Scholarship not found")
+    }
+
+    const { response } = await soapRequest({
+      url: setAcceptance.url,
+      headers: setAcceptance.headers,
+      xml: util.format(
+        setAcceptance.body,
+        user_id,
+        scholarship.scholarship_id,
+        scholarship.title,
+        status
+      )
+    })
+
+    const { body } = response
+
+    const parser = new xml2js.Parser()
+    const parsedBody = await parser.parseStringPromise(body)
+    const scholarships =
+      parsedBody["S:Envelope"]["S:Body"][0]["ns2:setAcceptanceResponse"][0][
+        "return"
+      ]
+
+    res.status(200).json({
+      status: "success",
+      message: "Scholarship acceptance updated successfully",
+      data: {
+        user_id: scholarships.user_id_student[0],
+        scholarship_id: scholarships.scholarship_id_rest[0],
+        scholarship_name: scholarships.scholarship_name[0],
+        status: scholarships.status[0]
+      }
+    })
+  } catch (error: any) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+      data: error
+    })
+  }
 }
