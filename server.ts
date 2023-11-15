@@ -21,6 +21,7 @@ const fileRoute = require("./routes/files.routes")
 const publicFile = require("./routes/filesPublic.routes")
 const publicAssignment = require("./routes/assignmentPublic.routes")
 const publicUniversity = require("./routes/universityPublic.routes")
+const studentRoute = require("./routes/student.routes")
 
 app.use(
   cors({
@@ -38,6 +39,7 @@ app.use("/api", publicFile)
 app.use("/api", publicAssignment)
 app.use("/api", publicOrganization)
 app.use("/api", publicUniversity)
+app.use("/api", studentRoute)
 app.use(verifyJWT)
 app.use("/api", UniversityRoute)
 app.use("/api", ScholarshipRoute)
