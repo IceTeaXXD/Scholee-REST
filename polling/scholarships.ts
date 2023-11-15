@@ -53,7 +53,15 @@ export const scholarshipsSync = async () => {
                             coverage: data.coverage,
                             contact_name: data.contact_name,
                             contact_email: data.contact_email,
-                            organization_id: Number(scholarship.user_id_scholarship_rest[0])
+                            organization_id: Number(scholarship.user_id_scholarship_rest[0]),
+                            scholarshiptype: {
+                                create: data.type.split(",").map((t: string) => ({
+                                    type: t
+                                }))
+                            }
+                        },
+                        include: {
+                            scholarshiptype: true
                         }
                     }
                 )
