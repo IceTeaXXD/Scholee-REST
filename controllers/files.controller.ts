@@ -48,10 +48,10 @@ export const getFileById = async (req: Request, res: Response) => {
 export const getAllFiles = async (req: Request, res: Response) => {
     try {
         const { sid, aid } = req.params
-        const files = await prisma.files.findUnique({
+        const files = await prisma.files.findMany({
             where: {
                 scholarship_id: Number(sid),
-                file_id: Number(aid)
+                assignment_id: Number(aid)
             },
             select: {
                 file_path: true,
@@ -68,8 +68,7 @@ export const getAllFiles = async (req: Request, res: Response) => {
             status: "success",
             message: "File retrieved successfully",
             data: {
-                file_id: files.file_id,
-                file_path: files.file_path
+                files
             }
         })
     } catch (error: any) {
@@ -81,7 +80,6 @@ export const getAllFiles = async (req: Request, res: Response) => {
 }
 
 /* URL: /scholarship/:sid/assignment/:aid/ */
-/* TODO: Middleware Uploading File */
 export const uploadFiles = async (req: Request, res: Response) => {
     try {
         const { sid, aid } = req.params;
@@ -157,7 +155,10 @@ export const uploadFile = async (fileObject : any) => {
             fields: 'id,name,webViewLink', 
         });
 
-        return data.webViewLink;
+        const fileId = data.id;
+        const embeddedPreviewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+
+        return embeddedPreviewUrl;
     } catch (error : any) {
         console.error('Error uploading file to Google Drive:', error.message);
         throw error;
