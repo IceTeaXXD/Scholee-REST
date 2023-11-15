@@ -273,6 +273,7 @@ export const deleteUniversity = async (req: Request, res: Response) => {
 
 export const getUniversityStats = async (req: Request, res: Response) => {
   const { id } = req.params
+  const { name, itemsperpage, currentPage } = req.query
 
   /* Find the PHP ID */
   const { response } = await soapRequest({
@@ -298,18 +299,22 @@ export const getUniversityStats = async (req: Request, res: Response) => {
 
     const phpId = uniObj ? uniObj.phpUniId[0] : null
 
-    const url = process.env.MONOLITH_URL + "/api/university/stats.php"
-    const universityAll = await fetch(url)
+    const url = new URL (process.env.MONOLITH_URL + "/api/university/stats.php")
+    const params = new URLSearchParams()
+    params.append("uid", phpId)
+    if(itemsperpage){
+      params.append("name", name ? String(name) : "")
+      params.append("itemsperpage", itemsperpage ? String(itemsperpage) : "")
+      params.append("currentpage", currentPage ? String(currentPage): "")
+    }
+    url.search = params.toString()
+    const universityAll = await fetch (url.toString())
     const universityJSON = await universityAll.json()
 
-    const uni = universityJSON.filter(
-      (university: any) => university.university_id == phpId
-    )
-
-    if (uni) {
+    if (universityJSON) {
       res.status(200).json({
         message: "Success",
-        data: uni
+        data: universityJSON
       })
     } else {
       res.status(404).json({ error: "University not found" })
