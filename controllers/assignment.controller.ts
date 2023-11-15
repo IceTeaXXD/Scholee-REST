@@ -26,7 +26,7 @@ export const getAssignment = async (req: Request, res: Response) => {
       }
 
       const scholarshipAcc = await soapRequest({
-        url: getAllScholarshipAcceptance.scholarshipAccUrl,
+        url: getAllScholarshipAcceptance.url,
         headers: getAllScholarshipAcceptance.headers,
         xml: util.format(getAllScholarshipAcceptance.body)
       })
@@ -146,7 +146,7 @@ export const getAssignmentBySid = async (req: Request, res: Response) => {
       }
 
       const scholarshipAcc = await soapRequest({
-        url: getAllScholarshipAcceptance.scholarshipAccUrl,
+        url: getAllScholarshipAcceptance.url,
         headers: getAllScholarshipAcceptance.headers,
         xml: util.format(getAllScholarshipAcceptance.body)
       })

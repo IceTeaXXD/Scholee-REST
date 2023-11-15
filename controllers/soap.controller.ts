@@ -15,7 +15,7 @@ export const scholarshipAcceptance = async (req: Request, res: Response) => {
         const { user_id_student, scholarship_id, status } = req.body
 
         const result = await soapRequest({
-            url: setAcceptance.scholarshipAccUrl,
+            url: setAcceptance.url,
             headers: setAcceptance.headers,
             xml: util.format(
                 setAcceptance.body,
@@ -76,7 +76,7 @@ export const getAllScholarship = async(req : Request, res : Response) => {
 export const getScholarshipAcceptance = async(req : Request, res: Response) => {
     try {
         const result = await soapRequest({
-            url : getAllScholarshipAcceptance.scholarshipAccUrl,
+            url : getAllScholarshipAcceptance.url,
             headers : getAllScholarshipAcceptance.headers,
             xml : util.format(
                 getAllScholarshipAcceptance.body
