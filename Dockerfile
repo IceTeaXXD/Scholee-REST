@@ -1,10 +1,9 @@
-# Use the official Node.js image as the base image
-FROM node:21.1.0
+FROM node:21-alpine
 
-# Set the working directory in the container
 WORKDIR /app
 
 COPY package*.json ./
+COPY yarn.lock ./
 COPY ./prisma/schema.prisma ./prisma/
 COPY .env ./
 

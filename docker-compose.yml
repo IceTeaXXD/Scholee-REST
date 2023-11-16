@@ -1,6 +1,6 @@
 services:  
   rest-service-db:
-      image: postgres:latest
+      image: postgres:16-alpine
       restart: always
       ports:
         - 5432:5432
@@ -11,8 +11,13 @@ services:
       volumes:
         - "./prisma/migrations/db:/docker-entrypoint-initdb.d"
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server
+
   rest-service:
-    image: node:latest
     build: 
       context: ../rest-service
       dockerfile: Dockerfile
@@ -21,3 +26,4 @@ services:
     restart: always
     depends_on:
       - rest-service-db
+      - redis
