@@ -18,6 +18,6 @@ router.patch("/scholarship/:id", updateScholarship)
 router.delete("/scholarship/:id", deleteScholarship)
 router.get("/scholarshiptype", getAllScholarshipTypes)
 router.get("/scholarship/:id/count", scholarshipCount)
-router.post("/scholarship/:sid/accept", scholarshipAcceptance)
+router.post("/scholarship/acceptance/:sid", scholarshipAcceptance)
 
 module.exports = router

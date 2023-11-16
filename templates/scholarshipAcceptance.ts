@@ -6,7 +6,7 @@ const headers = {
     "X-API-KEY": process.env.SOAP_API_KEY
 }
 
-const url = process.env.SOAP_URL + "/ws/ScholarshipAcceptanceService?wsdl"
+const url = process.env.SOAP_URL + "/ws/ScholarshipAcceptance?wsdl"
 
 const setAcceptanceTemplate = `
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
