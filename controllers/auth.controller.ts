@@ -201,12 +201,9 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
     const redisData = await client.get(refreshToken)
     if (redisData) {
       // Data found in Redis
-      console.log("Data found in Redis")
       const decoded = JSON.parse(redisData)
       const { user_id, email, name, roles } = decoded
-      const accessTokenSecret: string = String(
-        process.env.ACCESS_TOKEN_SECRET
-      )
+      const accessTokenSecret: string = String(process.env.ACCESS_TOKEN_SECRET)
       const accToken = generateAccessToken(
         user_id,
         name,
@@ -220,7 +217,6 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
       res.json({ user_id, email, name, roles, accToken })
     } else {
       // Data not found in Redis
-      console.log("Data not found in Redis")
       try {
         const findUser = await prismaClient.user.findFirst({
           where: {

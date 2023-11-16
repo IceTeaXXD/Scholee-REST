@@ -2,8 +2,8 @@ import dotenv from "dotenv"
 dotenv.config()
 
 const headers = {
-    "Content-Type": "text/xml;charset=UTF-8",
-    "X-API-KEY": process.env.SOAP_API_KEY
+  "Content-Type": "text/xml;charset=UTF-8",
+  "X-API-KEY": process.env.SOAP_API_KEY
 }
 
 const url = process.env.SOAP_URL + "/ws/ScholarshipService?wsdl"
@@ -41,19 +41,19 @@ const viewScholarshipCountTemplate = `
 `
 
 export const getAllScholarship = {
-    url,
-    headers,
-    body: getAllScholarshipEnvelope
+  url,
+  headers,
+  body: getAllScholarshipEnvelope
 }
 
 export const setScholarshipREST = {
-    url,
-    headers, 
-    body: setScholarshipRESTTemplate
+  url,
+  headers,
+  body: setScholarshipRESTTemplate
 }
 
 export const viewScholarshipCount = {
-    url,
-    headers,
-    body: viewScholarshipCountTemplate
+  url,
+  headers,
+  body: viewScholarshipCountTemplate
 }

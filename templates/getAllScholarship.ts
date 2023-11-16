@@ -1,9 +1,10 @@
 const headers = {
-    "Content-Type": "text/xml;charset=UTF-8",
-    "X-API-KEY": process.env.SOAP_API_KEY
+  "Content-Type": "text/xml;charset=UTF-8",
+  "X-API-KEY": process.env.SOAP_API_KEY
 }
 
-const getAllScholarshipUrl = process.env.SOAP_URL + "/ws/ScholarshipService?wsdl"
+const getAllScholarshipUrl =
+  process.env.SOAP_URL + "/ws/ScholarshipService?wsdl"
 
 const getAllScholarshipTemplate = `
 <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -15,7 +16,7 @@ const getAllScholarshipTemplate = `
 `
 
 export const getAllScholarships = {
-    getAllScholarshipUrl,
-    headers, 
-    body: getAllScholarshipTemplate
+  getAllScholarshipUrl,
+  headers,
+  body: getAllScholarshipTemplate
 }

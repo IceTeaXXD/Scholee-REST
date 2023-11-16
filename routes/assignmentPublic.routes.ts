@@ -1,8 +1,8 @@
 import {
-    getAssignmentBySid,
-    getAssignment
-} from '../controllers/assignment.controller'
-import express from 'express'
+  getAssignmentBySid,
+  getAssignment
+} from "../controllers/assignment.controller"
+import express from "express"
 
 const router = express.Router()
 

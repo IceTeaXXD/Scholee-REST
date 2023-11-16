@@ -299,16 +299,16 @@ export const getUniversityStats = async (req: Request, res: Response) => {
 
     const phpId = uniObj ? uniObj.phpUniId[0] : null
 
-    const url = new URL (process.env.MONOLITH_URL + "/api/university/stats.php")
+    const url = new URL(process.env.MONOLITH_URL + "/api/university/stats.php")
     const params = new URLSearchParams()
     params.append("uid", phpId)
-    if(itemsperpage){
+    if (itemsperpage) {
       params.append("name", name ? String(name) : "")
       params.append("itemsperpage", itemsperpage ? String(itemsperpage) : "")
-      params.append("currentpage", currentPage ? String(currentPage): "")
+      params.append("currentpage", currentPage ? String(currentPage) : "")
     }
     url.search = params.toString()
-    const universityAll = await fetch (url.toString())
+    const universityAll = await fetch(url.toString())
     const universityJSON = await universityAll.json()
 
     if (universityJSON) {

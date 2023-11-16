@@ -169,7 +169,7 @@ const soapSync = async (scholarship: any, newScholarship: any) => {
   })
 
   /* If scholarship already has acceptance, update the scholarship_id_rest in SOAP */
-  const { res } = await soapRequest({
+  await soapRequest({
     url: setAcceptanceScholarshipIDREST.url,
     headers: setAcceptanceScholarshipIDREST.headers,
     xml: util.format(
