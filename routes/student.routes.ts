@@ -1,7 +1,7 @@
 import express from "express"
 import {
-    getUserPhpInfo,
-    getStudentFromScholarship
+  getUserPhpInfo,
+  getStudentFromScholarship
 } from "../controllers/student.controller"
 
 const router = express.Router()

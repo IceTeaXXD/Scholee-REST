@@ -1,10 +1,10 @@
 import express from "express"
 import {
-    getUniversities,
-    getUniversity,
-    updateUniversity,
-    deleteUniversity,
-    getUniversityStats
+  getUniversities,
+  getUniversity,
+  updateUniversity,
+  deleteUniversity,
+  getUniversityStats
 } from "../controllers/university.controller"
 
 const router = express.Router()

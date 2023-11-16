@@ -1,7 +1,5 @@
 import express from "express"
-import {
-    createUniversity
-} from "../controllers/university.controller"
+import { createUniversity } from "../controllers/university.controller"
 
 const router = express.Router()
 

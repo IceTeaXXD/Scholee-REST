@@ -2,8 +2,8 @@ import dotenv from "dotenv"
 dotenv.config()
 
 const headers = {
-    "Content-Type": "text/xml;charset=UTF-8",
-    "X-API-KEY": process.env.SOAP_API_KEY
+  "Content-Type": "text/xml;charset=UTF-8",
+  "X-API-KEY": process.env.SOAP_API_KEY
 }
 
 const url = process.env.SOAP_URL + "/ws/OrganizationRegistration?wsdl"
@@ -30,13 +30,13 @@ const validateReferralCodeTemplate = `
 `
 
 export const createRESTId = {
-    url,
-    headers,
-    body: createRESTIdTemplate
+  url,
+  headers,
+  body: createRESTIdTemplate
 }
 
 export const validateReferralCode = {
-    url,
-    headers,
-    body: validateReferralCodeTemplate
+  url,
+  headers,
+  body: validateReferralCodeTemplate
 }

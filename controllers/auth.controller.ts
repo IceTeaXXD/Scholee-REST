@@ -10,7 +10,6 @@ import {
 } from "jsonwebtoken"
 const prismaClient = new PrismaClient()
 import { client } from "../redis"
-import { promisify } from "util"
 
 const generateAccessToken = (
   user_id: number,
@@ -29,7 +28,7 @@ const generateAccessToken = (
       }
     },
     accessTokenSecret,
-    { expiresIn: "2m" }
+    { expiresIn: "1m" }
   )
 
   return accessToken
@@ -72,7 +71,7 @@ export const handleLogin = async (
           accessTokenSecret
         )
         res.cookie("accToken", accessToken, {
-          maxAge: 2 * 60 * 1000
+          maxAge: 1 * 60 * 1000
         })
         const refreshToken = jwt.sign(
           { user_id: findUser.user_id, email: email, userType: userType },
@@ -197,25 +196,27 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
     res.sendStatus(401)
     return
   }
-
   const refreshToken: string = cookies.jwt
-
   try {
     const redisData = await client.get(refreshToken)
-
-    console.log("handleRefreshToken")
     if (redisData) {
       // Data found in Redis
-      console.log("Data found in Redis")
       const decoded = JSON.parse(redisData)
-      const { user_id, email, name, roles, accessToken } = decoded
-      res.cookie("accToken", accessToken, {
-        maxAge: 2 * 60 * 1000
+      const { user_id, email, name, roles } = decoded
+      const accessTokenSecret: string = String(process.env.ACCESS_TOKEN_SECRET)
+      const accToken = generateAccessToken(
+        user_id,
+        name,
+        email,
+        roles,
+        accessTokenSecret
+      )
+      res.cookie("accToken", accToken, {
+        maxAge: 1 * 10 * 1000
       })
-      res.json({ user_id, email, name, roles, accessToken })
+      res.json({ user_id, email, name, roles, accToken })
     } else {
       // Data not found in Redis
-      console.log("Data not found in Redis")
       try {
         const findUser = await prismaClient.user.findFirst({
           where: {
@@ -256,12 +257,11 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
                 user_id: findUser.user_id,
                 email,
                 name,
-                roles,
-                accessToken
+                roles
               })
             )
             res.cookie("accToken", accessToken, {
-              maxAge: 2 * 60 * 1000
+              maxAge: 1 * 60 * 1000
             })
             res.json({
               user_id: findUser.user_id,
@@ -284,59 +284,3 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
     return
   }
 }
-// export const handleRefreshToken = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   const cookies = req.cookies
-//   if (!cookies?.jwt) {
-//     res.sendStatus(401)
-//     return
-//   }
-
-//   const refreshToken: string = cookies.jwt
-//   try {
-//     const findUser = await prismaClient.user.findFirst({
-//       where: {
-//         refreshToken: refreshToken
-//       }
-//     })
-
-//     if (!findUser) {
-//       res.sendStatus(403)
-//       return
-//     }
-
-//     verify(
-//       refreshToken,
-//       process.env.REFRESH_TOKEN_SECRET as string,
-//       (err, decoded: any) => {
-//         if (err || !findUser || findUser.email !== decoded.email) {
-//           res.sendStatus(403)
-//           return
-//         }
-//         const name = findUser.name
-//         const email = findUser.email
-//         const roles = findUser.role
-//         const accessTokenSecret: string = String(
-//           process.env.ACCESS_TOKEN_SECRET
-//         )
-//         const accessToken = generateAccessToken(
-//           findUser.user_id,
-//           findUser.name,
-//           findUser.email,
-//           roles,
-//           accessTokenSecret
-//         )
-//         res.cookie("accToken", accessToken, {
-//           maxAge: 2 * 60 * 1000
-//         })
-//         res.json({ user_id: findUser.user_id, email, name, roles, accessToken })
-//       }
-//     )
-//   } catch (error) {
-//     console.error(error)
-//     res.sendStatus(500)
-//     return
-//   }
-// }

@@ -1,10 +1,10 @@
 import express from "express"
 import {
-    getOrganizations,
-    getOrganization,
-    createOrganization,
-    updateOrganization,
-    deleteOrganization
+  getOrganizations,
+  getOrganization,
+  createOrganization,
+  updateOrganization,
+  deleteOrganization
 } from "../controllers/organization.controller"
 
 const router = express.Router()

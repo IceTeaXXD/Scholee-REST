@@ -1,13 +1,13 @@
 import express from "express"
 import {
-    createScholarship,
-    getScholarships,
-    getScholarship,
-    updateScholarship,
-    deleteScholarship,
-    getAllScholarshipTypes,
-    scholarshipCount,
-    scholarshipAcceptance
+  createScholarship,
+  getScholarships,
+  getScholarship,
+  updateScholarship,
+  deleteScholarship,
+  getAllScholarshipTypes,
+  scholarshipCount,
+  scholarshipAcceptance
 } from "../controllers/scholarship.controller"
 
 const router = express.Router()

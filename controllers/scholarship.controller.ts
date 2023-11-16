@@ -152,9 +152,10 @@ export const getScholarships = async (req: Request, res: Response) => {
       numberOfPages,
       data: scholarships.map((scholarship) => {
         const countObject = scholarship_count.find(
-          (count: any) => count.scholarship_id_rest[0] == scholarship.scholarship_id
-        );
-        
+          (count: any) =>
+            count.scholarship_id_rest[0] == scholarship.scholarship_id
+        )
+
         return {
           organization_id: scholarship.organization_id,
           scholarship_id: scholarship.scholarship_id,
@@ -377,13 +378,13 @@ export const scholarshipCount = async (id: Number) => {
   })
 
   const { body } = response
-      
+
   const parser = new xml2js.Parser()
   const parsedBody = await parser.parseStringPromise(body)
   const scholarships =
-      parsedBody["S:Envelope"]["S:Body"][0][
-          "ns2:getScholarshipViewResponse"
-      ][0]["return"]
+    parsedBody["S:Envelope"]["S:Body"][0]["ns2:getScholarshipViewResponse"][0][
+      "return"
+    ]
 
   return scholarships
 }
