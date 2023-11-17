@@ -453,3 +453,33 @@ export const scholarshipAcceptance = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const getCountOfUser = async(req: Request, res : Response) => {
+  try {
+    const {id} = req.params
+    const accessToken = req.cookies.accToken
+    if (accessToken) {
+      const count = await prisma.scholarship.count({
+        where: {
+          organization_id: Number(id)
+        }
+      });
+      res.status(200).json({
+        status : "success",
+        message : "Success Count of User",
+        data : count
+      })
+    } else {
+      res.status(401).json({
+        status : "Token error",
+        message : "Unauthorized"
+      })
+    }
+  }catch (err : any) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+      data: err
+    })
+  }
+}
