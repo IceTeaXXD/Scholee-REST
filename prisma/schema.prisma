@@ -88,6 +88,12 @@ model Files {
   assignment Assignment @relation(fields: [organization_id, scholarship_id, assignment_id], references: [organization_id, scholarship_id, assignment_id], onDelete: Cascade)
 }
 
+model apikeys {
+  id_key    Int      @id @default(autoincrement()) 
+  service_name String
+  key_value String 
+}
+
 enum Role {
   university
   organization

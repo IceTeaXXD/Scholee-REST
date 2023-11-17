@@ -87,6 +87,15 @@ CREATE TABLE "Files" (
     CONSTRAINT "Files_pkey" PRIMARY KEY ("file_id")
 );
 
+-- CreateTable
+CREATE TABLE "apikeys" (
+    "id_key" SERIAL NOT NULL,
+    "service_name" TEXT NOT NULL,
+    "key_value" TEXT NOT NULL,
+
+    CONSTRAINT "apikeys_pkey" PRIMARY KEY ("id_key")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_user_id_key" ON "User"("user_id");
 
@@ -122,3 +131,7 @@ ALTER TABLE "Assignment" ADD CONSTRAINT "Assignment_organization_id_scholarship_
 
 -- AddForeignKey
 ALTER TABLE "Files" ADD CONSTRAINT "Files_organization_id_scholarship_id_assignment_id_fkey" FOREIGN KEY ("organization_id", "scholarship_id", "assignment_id") REFERENCES "Assignment"("organization_id", "scholarship_id", "assignment_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+INSERT INTO "apikeys" (service_name, key_value) VALUES ('SPA', 'spaKey');
+
+INSERT INTO "apikeys" (service_name, key_value) VALUES ('PHP', 'phpKey');
