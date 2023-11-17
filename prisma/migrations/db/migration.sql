@@ -83,6 +83,7 @@ CREATE TABLE "Files" (
     "organization_id" INTEGER NOT NULL,
     "scholarship_id" INTEGER NOT NULL,
     "assignment_id" INTEGER NOT NULL,
+    "score" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Files_pkey" PRIMARY KEY ("file_id")
 );
