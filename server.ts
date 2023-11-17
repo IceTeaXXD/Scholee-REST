@@ -4,8 +4,22 @@ import cors from "cors"
 import dotenv from "dotenv"
 import { client } from "./redis"
 import { sync } from "./polling/sync"
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 dotenv.config()
 
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Scholee API Documentation',
+      version: '1.0.0',
+      description: 'Description for your API',
+    },
+  },
+  apis: ['./routes/*.ts'],
+};
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 const app = express()
 const PORT = process.env.PORT || 5000
 const cookies = require("cookie-parser")
@@ -34,6 +48,7 @@ app.use(cookies())
 app.use(express.static("static"))
 app.use(express.json())
 app.use("/", defaultroute)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api", authRoute)
 app.use("/api", soapRoute)
 app.use("/api", publicFile)
