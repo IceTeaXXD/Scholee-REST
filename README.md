@@ -31,7 +31,7 @@ The database scheme used here is as follows
 <img src="./doc/scheme.jpg">
 
 ## API Documentation
-Using Swagger, on /api/docs, we give the documentation here.
+Using Swagger, on /doc, we give the documentation here.
 
 ## Contributors
 | Functionalities | 13521004   | 13521007 | 13521024 | 
