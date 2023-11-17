@@ -40,7 +40,7 @@ const studentRoute = require("./routes/student.routes")
 
 app.use(
   cors({
-    origin: [process.env.SPA_URL as any, process.env.MONOLITH_URL as any],
+    origin: [process.env.SPA_URL as any, process.env.MONOLITH_URL as any, "http://localhost:3000"],
     credentials: true
   })
 )
