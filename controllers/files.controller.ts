@@ -47,20 +47,20 @@ export const getFileById = async (req: Request, res: Response) => {
 
 export const scoreFile = async (req: Request, res: Response) => {
   try {
-    const { sid, aid, fid, uid } = req.params
-    const { score } = req.body
+    const { sid, aid} = req.params
+    const { fid, score } = req.body
+    console.log(score)
     const files = await prisma.files.update({
       where: {
         scholarship_id: Number(sid),
         assignment_id: Number(aid),
-        file_id: Number(fid),
-        user_id_student: Number(uid)
+        file_id: fid
       },
       data: {
         score: Number(score)
       }
     })
-
+    console.log("files", files)
     if (!files) {
       throw new Error("Files Not Found!")
     }
