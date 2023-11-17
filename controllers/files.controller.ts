@@ -20,7 +20,44 @@ export const getFileById = async (req: Request, res: Response) => {
       select: {
         file_path: true,
         file_id: true,
-        user_id_student: true
+        user_id_student: true,
+        score: true,
+      }
+    })
+
+    if (!files) {
+      throw new Error("Files Not Found!")
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "File retrieved successfully",
+      data: {
+        file_id: files.file_id,
+        file_path: files.file_path
+      }
+    })
+  } catch (error: any) {
+    res.status(400).json({
+      status: "error",
+      message: error.message
+    })
+  }
+}
+
+export const scoreFile = async (req: Request, res: Response) => {
+  try {
+    const { sid, aid, fid, uid } = req.params
+    const { score } = req.body
+    const files = await prisma.files.update({
+      where: {
+        scholarship_id: Number(sid),
+        assignment_id: Number(aid),
+        file_id: Number(fid),
+        user_id_student: Number(uid)
+      },
+      data: {
+        score: Number(score)
       }
     })
 
@@ -56,7 +93,8 @@ export const getAllFiles = async (req: Request, res: Response) => {
       select: {
         file_path: true,
         file_id: true,
-        user_id_student: true
+        user_id_student: true,
+        score: true
       }
     })
 

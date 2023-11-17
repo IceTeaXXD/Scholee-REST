@@ -85,6 +85,7 @@ model Files {
   organization_id Int
   scholarship_id Int
   assignment_id Int
+  score Int @default(0)
   assignment Assignment @relation(fields: [organization_id, scholarship_id, assignment_id], references: [organization_id, scholarship_id, assignment_id], onDelete: Cascade)
 }
 

@@ -5,7 +5,7 @@
  *   description: Operations related to files
  */
 import express from "express"
-import { uploadFiles, uploadFile } from "../controllers/files.controller"
+import { uploadFiles, uploadFile, scoreFile } from "../controllers/files.controller"
 
 import multer from "multer"
 
@@ -78,5 +78,7 @@ router.post('/files/scholarship/:sid/assignment/:aid', upload.any(), async (req:
     res.status(500).send(error.message);
   }
 });
+
+router.patch('/files/scholarship/:sid/assignment/:aid', scoreFile);
 
 module.exports = router

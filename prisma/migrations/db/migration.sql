@@ -83,6 +83,7 @@ CREATE TABLE "Files" (
     "organization_id" INTEGER NOT NULL,
     "scholarship_id" INTEGER NOT NULL,
     "assignment_id" INTEGER NOT NULL,
+    "score" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Files_pkey" PRIMARY KEY ("file_id")
 );
@@ -131,7 +132,3 @@ ALTER TABLE "Assignment" ADD CONSTRAINT "Assignment_organization_id_scholarship_
 
 -- AddForeignKey
 ALTER TABLE "Files" ADD CONSTRAINT "Files_organization_id_scholarship_id_assignment_id_fkey" FOREIGN KEY ("organization_id", "scholarship_id", "assignment_id") REFERENCES "Assignment"("organization_id", "scholarship_id", "assignment_id") ON DELETE CASCADE ON UPDATE CASCADE;
-
-INSERT INTO "apikeys" (service_name, key_value) VALUES ('SPA', 'spaKey');
-
-INSERT INTO "apikeys" (service_name, key_value) VALUES ('PHP', 'phpKey');
