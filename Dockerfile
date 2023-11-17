@@ -12,6 +12,4 @@ RUN npx prisma generate
 
 COPY . .
 
-EXPOSE 5000
-
 CMD ["yarn", "start"]
